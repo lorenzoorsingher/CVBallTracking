@@ -39,7 +39,7 @@ args = get_args()
 cameras = {int(cam) for cam in args["cameras"].split(",")}
 
 video_dir = "data/video/"
-video_paths = {int(name[3]): video_dir + name for name in os.listdir(video_dir)}
+video_paths = {int(name[3]): video_dir + name for name in os.listdir(video_dir) if name.endswith(".mp4")}
 
 sizes_path = "data/camera_data/chess_sizes.json"
 with open(sizes_path, "r") as file:
