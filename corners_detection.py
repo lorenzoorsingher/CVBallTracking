@@ -6,7 +6,7 @@ import numpy as np
 from random import randint, choice
 from tqdm import tqdm
 
-from calib_setup import get_args
+from corners_setup import get_args
 from camera_controller import CameraController
 
 
