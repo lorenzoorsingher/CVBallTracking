@@ -6,6 +6,7 @@ import numpy as np
 from random import randint, choice
 
 from calib_setup import get_args
+from camera_controller import CameraController
 
 
 def get_corners(image, chessboard_size):
@@ -47,6 +48,8 @@ with open(sizes_path, "r") as file:
 
 cv.namedWindow("img", cv.WINDOW_NORMAL)
 
+
+cam = CameraController(2)
 
 for video_idx in cameras:
 
