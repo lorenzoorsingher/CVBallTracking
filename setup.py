@@ -16,20 +16,26 @@ def get_args_corners():
         metavar="",
     )
 
-    # parser.add_argument(
-    #     "-s",
-    #     "--sequence",
-    #     type=int,
-    #     help="Index of KITTI sequence [kitti mode]",
-    #     default=0,
-    #     metavar="",
-    # )
+    parser.add_argument(
+        "-dn",
+        "--detect-num",
+        type=int,
+        help="Minimum number of detections to stop the process",
+        default=20,
+        metavar="",
+    )
+
+    parser.add_argument(
+        "-dt",
+        "--distance-threshold",
+        type=int,
+        help="Minimum number of detections to stop the process",
+        default=100,
+        metavar="",
+    )
 
     args = vars(parser.parse_args())
     return args
-
-
-ù
 
 
 def get_args_calib():
