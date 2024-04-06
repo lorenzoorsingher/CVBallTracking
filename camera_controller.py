@@ -97,3 +97,13 @@ class CameraController:
                 },
                 f,
             )
+
+    def get_chessboard(self):
+        objp = np.zeros(
+            (self.chessboard_size[0] * self.chessboard_size[1], 3), np.float32
+        )
+        objp[:, :2] = np.mgrid[
+            0 : self.chessboard_size[0], 0 : self.chessboard_size[1]
+        ].T.reshape(-1, 2)
+
+        return objp

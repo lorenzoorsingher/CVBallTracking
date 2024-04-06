@@ -50,12 +50,11 @@ cv.namedWindow("img", cv.WINDOW_NORMAL)
 for camera_idx in cameras:
 
     cam = CameraController(camera_idx)
-    chessboard_size = sizes[str(camera_idx)]
+    chessboard_size = cam.chessboard_size
     cap = cv.VideoCapture(video_paths[camera_idx])
 
     vid_len = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
     idxs = [x for x in range(0, vid_len)]
-    # cap.set(cv.CAP_PROP_POS_FRAMES, cap.get(cv.CAP_PROP_POS_FRAMES) + 25)
 
     ret, frame = cap.read()
     canvas = np.full(frame.shape, 255, dtype=np.uint8)
