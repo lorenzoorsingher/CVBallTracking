@@ -35,7 +35,6 @@ class CameraController:
             dump_file = self.dump_path + sorted(os.listdir(self.dump_path))[-1]
 
         dmp = np.array(json.loads(open(dump_file).read()), dtype=np.float32)
-        breakpoint()
 
     def save_dump(self, all_corners):
 

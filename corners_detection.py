@@ -51,10 +51,10 @@ cv.namedWindow("img", cv.WINDOW_NORMAL)
 
 cam = CameraController(2)
 
-for video_idx in cameras:
+for camera_idx in cameras:
 
-    chessboard_size = sizes[str(video_idx)]
-    cap = cv.VideoCapture(video_paths[video_idx])
+    chessboard_size = sizes[str(camera_idx)]
+    cap = cv.VideoCapture(video_paths[camera_idx])
 
     vid_len = int(cap.get(cv.CAP_PROP_FRAME_COUNT))
     idxs = [x for x in range(0, vid_len)]
@@ -115,12 +115,19 @@ for video_idx in cameras:
         cv.imshow("img", np.vstack([frame, canvas]))
         cv.waitKey(1)
 
-    print(f"[calibration] Saving {len(all_corners)} corner sets")
+    print(
+        f"[calibration] Saving {len(all_corners)} corner sets for camera {camera_idx}..."
+    )
 
     all_corners = np.array(all_corners)
 
     cam.save_dump(all_corners)
 
-    cam.load_params()
-    breakpoint()
-    cv.waitKey(0)
+    objp = np.zeros((chessboard_size[0] * chessboard_size[1], 3), np.float32)
+    objp[:, :2] = np.mgrid[0 : chessboard_size[0], 0 : chessboard_size[1]].T.reshape(
+        -1, 2
+    )
+
+    ret, camera_matrix, distortion_coefficients, rvecs, tvecs = cv.calibrateCamera(
+        objp, all_corners, frame.shape[:2:][::-1], None, None
+    )
