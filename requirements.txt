@@ -1,0 +1,3 @@
+tqdm
+opencv-contrib-python
+numpy
