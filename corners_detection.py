@@ -6,7 +6,7 @@ import numpy as np
 from random import randint, choice
 from tqdm import tqdm
 
-from corners_setup import get_args
+from setup import get_args_corners
 from camera_controller import CameraController
 
 
@@ -31,8 +31,10 @@ def get_corners(image, chessboard_size):
     return ret, corners_refined
 
 
-args = get_args()
+args = get_args_corners()
 cameras = {int(cam) for cam in args["cameras"].split(",")}
+DETECT_NUM = args["detect_num"]
+DISTANCE_THRESHOLD = args["distance_threshold"]
 
 video_dir = "data/video/"
 video_paths = {
@@ -41,18 +43,13 @@ video_paths = {
     if name.endswith(".mp4")
 }
 
-sizes_path = "data/camera_data/chess_sizes.json"
-with open(sizes_path, "r") as file:
-    sizes = json.load(file)
-
 
 cv.namedWindow("img", cv.WINDOW_NORMAL)
 
 
-cam = CameraController(2)
-
 for camera_idx in cameras:
 
+    cam = CameraController(camera_idx)
     chessboard_size = sizes[str(camera_idx)]
     cap = cv.VideoCapture(video_paths[camera_idx])
 
@@ -66,12 +63,11 @@ for camera_idx in cameras:
     mid_points = []
     all_corners = []
 
-    MINDIST = 150
     FRAME_PURGE = 5
     FRAME_PURGE_NF = 5
 
     pbar = tqdm(total=vid_len)
-    while len(idxs) > 0 and len(all_corners) < 5:
+    while len(idxs) > 0 and len(all_corners) < DETECT_NUM:
         idx = choice(idxs)
 
         cap.set(cv.CAP_PROP_POS_FRAMES, idx)
@@ -90,17 +86,17 @@ for camera_idx in cameras:
             for mp in mid_points:
                 dist = np.linalg.norm(mp - midpoint)
 
-                if dist < MINDIST * 2:
+                if dist < DISTANCE_THRESHOLD * 2:
                     tooclose = True
                     break
 
             if not tooclose:
                 mid_points.append(midpoint)
-                cv.circle(canvas, midpoint, MINDIST, (0, 255, 0), 5)
+                cv.circle(canvas, midpoint, DISTANCE_THRESHOLD, (0, 255, 0), 10)
 
                 all_corners.append(corners_refined)
             else:
-                cv.circle(canvas, midpoint, MINDIST, (0, 0, 255), 2)
+                cv.circle(canvas, midpoint, DISTANCE_THRESHOLD, (0, 0, 255), 2)
             cv.circle(frame, midpoint, 10, (0, 255, 255), -1)
             FP = FRAME_PURGE
         else:
@@ -109,25 +105,20 @@ for camera_idx in cameras:
         to_be_removed = [x for x in range(idx - FP, idx + FP) if x in idxs]
 
         pbar.update(len(to_be_removed))
+        pbar.set_description(
+            f"cam {camera_idx} - {len(all_corners)}/{DETECT_NUM} detections"
+        )
         for x in to_be_removed:
             idxs.remove(x)
 
         cv.imshow("img", np.vstack([frame, canvas]))
         cv.waitKey(1)
 
+    pbar.close()
     print(
         f"[calibration] Saving {len(all_corners)} corner sets for camera {camera_idx}..."
     )
 
     all_corners = np.array(all_corners)
 
-    cam.save_dump(all_corners)
-
-    objp = np.zeros((chessboard_size[0] * chessboard_size[1], 3), np.float32)
-    objp[:, :2] = np.mgrid[0 : chessboard_size[0], 0 : chessboard_size[1]].T.reshape(
-        -1, 2
-    )
-
-    ret, camera_matrix, distortion_coefficients, rvecs, tvecs = cv.calibrateCamera(
-        objp, all_corners, frame.shape[:2:][::-1], None, None
-    )
+    cam.save_dump(all_corners, frame.shape[:2][::-1])
