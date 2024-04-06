@@ -45,6 +45,11 @@ class CameraController:
             if calib_file == "latest":
                 calib_file = self.calib_path + sorted(os.listdir(self.calib_path))[-1]
 
+            with open(calib_file, "r") as f:
+                cal = json.loads(f.read())
+                self.mtx = np.array(cal["mtx"], dtype=np.float32)
+                self.dist = np.array(cal["dist"], dtype=np.float32)
+
         if len(os.listdir(self.dump_path)) == 0:
             print("[camera] No dump files found, skipping...")
         else:
