@@ -53,14 +53,31 @@ def get_args_calib():
         metavar="",
     )
 
-    # parser.add_argument(
-    #     "-s",
-    #     "--sequence",
-    #     type=int,
-    #     help="Index of KITTI sequence [kitti mode]",
-    #     default=0,
-    #     metavar="",
-    # )
+    args = vars(parser.parse_args())
+    return args
+
+
+def get_args_pose():
+    parser = argparse.ArgumentParser(
+        prog="pose_estimation.py",
+        description="""Run pose estimation""",
+    )
+
+    parser.add_argument(
+        "-c",
+        "--camera",
+        type=int,
+        help="Set the index of the camera you want to calibrate",
+        default=1,
+        metavar="",
+    )
+
+    parser.add_argument(
+        "-R",
+        "--reuse",
+        action="store_true",
+        help="Reuse old screen point data",
+    )
 
     args = vars(parser.parse_args())
     return args
