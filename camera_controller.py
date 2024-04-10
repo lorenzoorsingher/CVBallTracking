@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+import cv2 as cv
 
 from time import strftime, localtime, time
 
@@ -12,9 +13,10 @@ class CameraController:
 
         self.mtx = None
         self.dist = None
-        self.rvecs = None
-        self.tvecs = None
+        self.rvecs = np.array([[0], [0], [0]], dtype=np.float32)
+        self.tvecs = np.array([[0], [0], [0]], dtype=np.float32)
         self.index = index
+
         self.main_path = f"{path}cam_{index}/"
         self.meta_file = f"{path}cam_{index}/metadata.json"
         self.dump_path = f"{self.main_path}dump/"
@@ -22,6 +24,7 @@ class CameraController:
 
         self.imsize = None
         self.chessboard_size = None
+        self.cell_size = 28
 
         self.build_tree()
         self.load_params()
@@ -37,24 +40,19 @@ class CameraController:
             with open(self.meta_file, "w") as f:
                 json.dump({"imsize": (0, 0)}, f)
 
-    def load_params(self, calib_file="latest", dump_file="latest"):
+    def load_params(self, dump_file="latest"):
 
-        if len(os.listdir(self.calib_path)) == 0:
-            print("[camera] No calibration files found, skipping...")
+        calib_file = f"{self.calib_path}camera_calib.json"
+        if not os.path.exists(calib_file):
+            print(f"[camera] No calib files found for camera {self.index}, skipping...")
         else:
-            if calib_file == "latest":
-                calib_file = self.calib_path + sorted(os.listdir(self.calib_path))[-1]
 
             with open(calib_file, "r") as f:
                 cal = json.loads(f.read())
                 self.mtx = np.array(cal["mtx"], dtype=np.float32)
                 self.dist = np.array(cal["dist"], dtype=np.float32)
-
-        if len(os.listdir(self.dump_path)) == 0:
-            print("[camera] No dump files found, skipping...")
-        else:
-            if dump_file == "latest":
-                dump_file = self.dump_path + sorted(os.listdir(self.dump_path))[-1]
+                self.rvecs = np.array(cal["rvecs"], dtype=np.float32)
+                self.tvecs = np.array(cal["tvecs"], dtype=np.float32)
 
         metadata = json.loads(open(self.meta_file).read())
         self.imsize = metadata["imsize"]
@@ -87,18 +85,24 @@ class CameraController:
             dmp = np.array(json.loads(f.read()), dtype=np.float32)
         return dmp
 
-    def save_calib(self, mtx, dist):
+    def save_calib(self, mtx=None, dist=None, rvecs=None, tvecs=None):
 
-        file_name = strftime("calib_%Y%m%d_%H%M%S.json", localtime(time()))
+        print("[Calibration] Saving calibration for camera ", self.index)
 
-        self.mtx = mtx
-        self.dist = dist
+        if mtx is None or dist is None:
+            mtx = self.mtx
+            dist = self.dist
+        else:
+            self.mtx = mtx
+            self.dist = dist
 
-        with open(f"{self.calib_path}{file_name}", "w") as f:
+        with open(f"{self.calib_path}camera_calib.json", "w") as f:
             json.dump(
                 {
                     "mtx": mtx.tolist(),
                     "dist": dist.tolist(),
+                    "tvecs": tvecs.tolist(),
+                    "rvecs": rvecs.tolist(),
                 },
                 f,
             )
@@ -111,4 +115,53 @@ class CameraController:
             0 : self.chessboard_size[0], 0 : self.chessboard_size[1]
         ].T.reshape(-1, 2)
 
+        objp = objp * self.cell_size
+
         return objp
+
+    def save_img_corners(self, real_corners, img_corners):
+
+        with open(f"{self.calib_path}img_points.json", "w") as f:
+            json.dump(
+                {
+                    "real_corners": real_corners,
+                    "img_corners": img_corners,
+                },
+                f,
+            )
+
+    def get_img_corners(self):
+
+        if not os.path.exists(f"{self.calib_path}img_points.json"):
+            print("[camera] No dump img corners file found, exiting...")
+            exit()
+
+        with open(f"{self.calib_path}img_points.json", "r") as f:
+            dmp = json.loads(f.read())
+        return dmp["real_corners"], dmp["img_corners"]
+
+    ###########################################################################
+
+    def get_camera_position(self):
+        rotation_matrix, _ = cv.Rodrigues(self.rvecs)
+        inverse_rotation_matrix = np.linalg.inv(rotation_matrix)
+        inv_tvecs = -np.dot(inverse_rotation_matrix, self.tvecs)
+        return inverse_rotation_matrix, inv_tvecs
+
+    def estimate_camera_position(self, real_corners, img_corners):
+        real_corners = np.array(real_corners, dtype=np.float32)
+        img_corners = np.array(img_corners, dtype=np.float32)
+
+        ret, rvecs, tvecs = cv.solvePnP(
+            np.array(real_corners, dtype=np.float32),
+            np.array(img_corners, dtype=np.float32),
+            self.mtx,
+            self.dist,
+        )
+
+        self.rvecs = rvecs
+        self.tvecs = tvecs
+
+        self.save_calib(rvecs=rvecs, tvecs=tvecs)
+
+        return self.get_camera_position()

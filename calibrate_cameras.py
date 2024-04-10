@@ -11,6 +11,7 @@ cameras = {int(cam) for cam in args["cameras"].split(",")}
 
 for camera_idx in cameras:
 
+    print("[Calibration] Calibrating camera ", camera_idx)
     cam = CameraController(camera_idx)
     all_corners = cam.get_dump()
 

@@ -38,11 +38,10 @@ DISTANCE_THRESHOLD = args["distance_threshold"]
 
 video_dir = "data/video/"
 video_paths = {
-    int(name[3]): video_dir + name
+    int(name.split("out")[1][:-5]): video_dir + name
     for name in os.listdir(video_dir)
     if name.endswith(".mp4")
 }
-
 
 cv.namedWindow("img", cv.WINDOW_NORMAL)
 
