@@ -95,6 +95,13 @@ class CameraController:
         else:
             self.mtx = mtx
             self.dist = dist
+        # TODO check if loading is correct when tvecs/rvecs are None
+        if rvecs is None or tvecs is None:
+            rvecs = self.rvecs
+            tvecs = self.tvecs
+        else:
+            self.rvecs = rvecs
+            self.tvecs = tvecs
 
         with open(f"{self.calib_path}camera_calib.json", "w") as f:
             json.dump(
