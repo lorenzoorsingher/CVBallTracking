@@ -1,11 +1,22 @@
 import json
 import numpy as np
-
+import os
 
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import matplotlib.pyplot as plt
 import numpy as np
+
+
+def get_video_paths():
+    video_dir = "data/video/"
+    video_paths = {
+        int(name.split("out")[1][:-5]): video_dir + name
+        for name in os.listdir(video_dir)
+        if name.endswith(".mp4")
+    }
+
+    return video_paths
 
 
 def set_axes_equal(ax):

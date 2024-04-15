@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 from setup import get_args_corners
 from camera_controller import CameraController
+from common import get_video_paths
 
 
 def get_corners(image, chessboard_size):
@@ -36,12 +37,7 @@ cameras = {int(cam) for cam in args["cameras"].split(",")}
 DETECT_NUM = args["detect_num"]
 DISTANCE_THRESHOLD = args["distance_threshold"]
 
-video_dir = "data/video/"
-video_paths = {
-    int(name.split("out")[1][:-5]): video_dir + name
-    for name in os.listdir(video_dir)
-    if name.endswith(".mp4")
-}
+video_paths = get_video_paths()
 
 cv.namedWindow("img", cv.WINDOW_NORMAL)
 

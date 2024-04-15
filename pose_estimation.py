@@ -8,6 +8,7 @@ import os
 
 from setup import get_args_pose
 from common import set_axes_equal
+from common import get_video_paths
 
 args = get_args_pose()
 
@@ -155,13 +156,8 @@ def get_real_points(cam_idx):
     real_corners = []
     curr_corner = 0
 
-    video_dir = "data/video/"
+    video_paths = get_video_paths()
 
-    video_paths = {
-        int(name.split("out")[1][:-5]): video_dir + name
-        for name in os.listdir(video_dir)
-        if name.endswith(".mp4")
-    }
     cap = cv.VideoCapture(video_paths[cam_idx])
 
     if not cap.isOpened():
