@@ -31,7 +31,12 @@ cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8, 12, 13]
 video_paths = get_video_paths()
 
 
+def foo():
+    pass
+
+
 cv.namedWindow("frames", cv.WINDOW_NORMAL)
+cv.createTrackbar("scale", "frames", 8000, 10000, foo)
 # cv.namedWindow("dist_frames", cv.WINDOW_NORMAL)
 
 cv.setMouseCallback("frames", get_clicks)
@@ -132,7 +137,7 @@ while loop:
 
             x_adj = x_og // divider + int(xp // divider)
             y_adj = y_og // divider + int(yp // divider)
-            cv.circle(copy_frame, (x_adj, y_adj), 20, (0, 255, 255), -1)
+            cv.circle(copy_frame, (x_adj, y_adj), 10, (0, 255, 255), -1)
             # print("imgp", (xp, yp))
         # print("cam_y ", cam_y)
         # print("cam_x ", cam_x)
@@ -209,14 +214,15 @@ while loop:
         rotm, _ = cv.Rodrigues(cur_cam.rvecs)
         tvec = np.array([x[0] for x in cur_cam.tvecs])
 
-        ux = cam_x - 3840 / 2
-        vx = cam_y - 2160 / 2
+        scale = cv.getTrackbarPos("scale", "frames")
+        ux = (cam_x - 3840 / 2) / scale
+        vx = (cam_y - 2160 / 2) / scale
 
         print("cam: ", ux, " ", vx)
         Tx, Ty, Tz = rotm.T @ -tvec
         # dx, dy, dz = rotm.T @ np.array([(cam_x - 3840 / 2), cam_y - 2160 / 2, 1])
         dv = rotm.T @ np.array([ux, vx, 1])
-        # dv /= np.linalg.norm(dv)
+        dv /= np.linalg.norm(dv)
         dx, dy, dz = dv
 
         X = (-Tz / dz) * dx + Tx
