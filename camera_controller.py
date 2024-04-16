@@ -9,8 +9,17 @@ from common import NumpyEncoder
 
 
 class CameraController:
-    def __init__(self, index, path="data/camera_data/"):
+    def __init__(self, index, path="data/camera_data/", imsize=(3840, 2160)):
+        """
+        This class is used to control camera data, such as calibration parameters,
+        it manages the files and directories for each camera and saves and loads
+        calibration parameters as well as some logic for camera position estimation
 
+        Parameters:
+        index (int): Camera index
+        path (str): Path to camera data directory
+        imsize (tuple): Image size of camera
+        """
         self.mtx = None
         self.dist = None
         self.rvecs = np.array([[0], [0], [0]], dtype=np.float32)
@@ -22,7 +31,7 @@ class CameraController:
         self.dump_path = f"{self.main_path}dump/"
         self.calib_path = f"{self.main_path}calib/"
 
-        self.imsize = None
+        self.imsize = imsize
         self.chessboard_size = None
         self.cell_size = 28
 
@@ -30,18 +39,21 @@ class CameraController:
         self.load_params()
 
     def build_tree(self):
+        """
+        Create directories for camera data if they do not exist
+        """
         if not os.path.exists(self.main_path):
             os.makedirs(self.main_path)
         if not os.path.exists(self.dump_path):
             os.makedirs(self.dump_path)
         if not os.path.exists(self.calib_path):
             os.makedirs(self.calib_path)
-        if not os.path.exists(self.meta_file):
-            with open(self.meta_file, "w") as f:
-                json.dump({"imsize": (0, 0)}, f)
 
-    def load_params(self, dump_file="latest"):
-
+    def load_params(self):
+        """
+        Load calibration parameters from file and
+        load metadata from file as well as chessboard size
+        """
         calib_file = f"{self.calib_path}camera_calib.json"
         if not os.path.exists(calib_file):
             print(f"[camera] No calib files found for camera {self.index}, skipping...")
@@ -62,21 +74,33 @@ class CameraController:
             sizes = json.load(file)
         self.chessboard_size = sizes[str(self.index)]
 
-    def save_dump(self, all_corners, imsize):
+    def save_dump(self, all_corners):
+        """
+        Save dump of all detected corners to file
 
+        Parameters:
+        all_corners (np.array): Array of all detected corners
+        """
         file_name = strftime("dump_%Y%m%d_%H%M%S.json", localtime(time()))
 
         with open(f"{self.dump_path}{file_name}", "w") as f:
             json.dump(all_corners, f, cls=NumpyEncoder)
 
-        with open(self.meta_file, "w") as f:
-            json.dump({"imsize": imsize}, f)
-
     def get_dump(self, dump_file="latest"):
+        """
+        Returns the dump of all detected corners, if no dump file is specified
+        the latest dump file will be loaded
+
+        Parameters:
+        dump_file (str): Name of the dump file to load
+
+        Returns:
+        np.array: Array of all detected corners
+        """
 
         if len(os.listdir(self.dump_path)) == 0:
-            print("[camera] No dump files found, exiting...")
-            exit()
+            print("[camera] No dump files found...")
+            return None
         else:
             if dump_file == "latest":
                 dump_file = self.dump_path + sorted(os.listdir(self.dump_path))[-1]
@@ -86,7 +110,16 @@ class CameraController:
         return dmp
 
     def save_calib(self, mtx=None, dist=None, rvecs=None, tvecs=None):
+        """
+        Save calibration parameters to file, if no parameters are specified
+        the current parameters will be saved
 
+        Parameters:
+        mtx (np.array): Camera matrix
+        dist (np.array): Distortion coefficients
+        rvecs (np.array): Rotation vectors
+        tvecs (np.array): Translation vectors
+        """
         print("[Calibration] Saving calibration for camera ", self.index)
 
         if mtx is None or dist is None:
@@ -115,6 +148,12 @@ class CameraController:
             )
 
     def get_chessboard(self):
+        """
+        Generate chessboard points based on the chessboard size and cell size
+
+        Returns:
+        np.array: Array of chessboard points
+        """
         objp = np.zeros(
             (self.chessboard_size[0] * self.chessboard_size[1], 3), np.float32
         )
@@ -127,7 +166,13 @@ class CameraController:
         return objp
 
     def save_img_corners(self, real_corners, img_corners):
+        """
+        Save the real and image corners to file
 
+        Parameters:
+        real_corners (np.array): Real corners
+        img_corners (np.array): Image corners
+        """
         with open(f"{self.calib_path}img_points.json", "w") as f:
             json.dump(
                 {
@@ -138,7 +183,13 @@ class CameraController:
             )
 
     def get_img_corners(self):
+        """
+        Returns the real and image corners from file
 
+        Returns:
+        np.array: Real corners
+        np.array: Image corners
+        """
         if not os.path.exists(f"{self.calib_path}img_points.json"):
             print("[camera] No dump img corners file found, exiting...")
             exit()
@@ -147,15 +198,34 @@ class CameraController:
             dmp = json.loads(f.read())
         return dmp["real_corners"], dmp["img_corners"]
 
-    ###########################################################################
-
     def get_camera_position(self):
-        rotation_matrix, _ = cv.Rodrigues(self.rvecs)
-        inverse_rotation_matrix = np.linalg.inv(rotation_matrix)
-        inv_tvecs = -np.dot(inverse_rotation_matrix, self.tvecs)
-        return inverse_rotation_matrix, inv_tvecs
+        """
+        Inverts tvecs and rvecs to get the camera position in world coordinates
+
+        Returns:
+        np.array: Rotation matrix
+        np.array: Translation vectors
+        """
+
+        rot_mtx, _ = cv.Rodrigues(self.rvecs)
+        world_rot_mtx = np.linalg.inv(rot_mtx)
+        world_tvecs = -np.dot(world_rot_mtx, self.tvecs)
+        return world_rot_mtx, world_tvecs
 
     def estimate_camera_position(self, real_corners, img_corners):
+        """
+        Estimate the camera position based on real and image corners using
+        solvePnP and save the calibration results to file. Returns the camera
+        position in world coordinates
+
+        Parameters:
+        real_corners (np.array): Real corners
+        img_corners (np.array): Image corners
+
+        Returns:
+        np.array: Rotation matrix
+        np.array: Translation vectors
+        """
         real_corners = np.array(real_corners, dtype=np.float32)
         img_corners = np.array(img_corners, dtype=np.float32)
 
@@ -172,7 +242,3 @@ class CameraController:
         self.save_calib(rvecs=rvecs, tvecs=tvecs)
 
         return self.get_camera_position()
-
-    def repoject_points(self, objp):
-        imgp, _ = cv.projectPoints(objp, self.rvecs, self.tvecs, self.mtx, self.dist)
-        return imgp
