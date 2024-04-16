@@ -16,9 +16,9 @@ class CameraController:
         calibration parameters as well as some logic for camera position estimation
 
         Parameters:
-        index (int): Camera index
-        path (str): Path to camera data directory
-        imsize (tuple): Image size of camera
+        - index (int): Camera index
+        - path (str): Path to camera data directory
+        - imsize (tuple): Image size of camera
         """
         self.mtx = None
         self.dist = None
@@ -79,7 +79,7 @@ class CameraController:
         Save dump of all detected corners to file
 
         Parameters:
-        all_corners (np.array): Array of all detected corners
+        - all_corners (np.array): Array of all detected corners
         """
         file_name = strftime("dump_%Y%m%d_%H%M%S.json", localtime(time()))
 
@@ -92,10 +92,10 @@ class CameraController:
         the latest dump file will be loaded
 
         Parameters:
-        dump_file (str): Name of the dump file to load
+        - dump_file (str): Name of the dump file to load
 
         Returns:
-        np.array: Array of all detected corners
+        - np.array: Array of all detected corners
         """
 
         if len(os.listdir(self.dump_path)) == 0:
@@ -115,10 +115,10 @@ class CameraController:
         the current parameters will be saved
 
         Parameters:
-        mtx (np.array): Camera matrix
-        dist (np.array): Distortion coefficients
-        rvecs (np.array): Rotation vectors
-        tvecs (np.array): Translation vectors
+        - mtx (np.array): Camera matrix
+        - dist (np.array): Distortion coefficients
+        - rvecs (np.array): Rotation vectors
+        - tvecs (np.array): Translation vectors
         """
         print("[Calibration] Saving calibration for camera ", self.index)
 
@@ -152,7 +152,7 @@ class CameraController:
         Generate chessboard points based on the chessboard size and cell size
 
         Returns:
-        np.array: Array of chessboard points
+        - np.array: Array of chessboard points
         """
         objp = np.zeros(
             (self.chessboard_size[0] * self.chessboard_size[1], 3), np.float32
@@ -170,8 +170,8 @@ class CameraController:
         Save the real and image corners to file
 
         Parameters:
-        real_corners (np.array): Real corners
-        img_corners (np.array): Image corners
+        - real_corners (np.array): Real corners
+        - img_corners (np.array): Image corners
         """
         with open(f"{self.calib_path}img_points.json", "w") as f:
             json.dump(
@@ -187,8 +187,8 @@ class CameraController:
         Returns the real and image corners from file
 
         Returns:
-        np.array: Real corners
-        np.array: Image corners
+        - np.array: Real corners
+        - np.array: Image corners
         """
         if not os.path.exists(f"{self.calib_path}img_points.json"):
             print("[camera] No dump img corners file found, exiting...")
@@ -203,8 +203,8 @@ class CameraController:
         Inverts tvecs and rvecs to get the camera position in world coordinates
 
         Returns:
-        np.array: Rotation matrix
-        np.array: Translation vectors
+        - np.array: Rotation matrix
+        - np.array: Translation vectors
         """
 
         rot_mtx, _ = cv.Rodrigues(self.rvecs)
@@ -219,12 +219,12 @@ class CameraController:
         position in world coordinates
 
         Parameters:
-        real_corners (np.array): Real corners
-        img_corners (np.array): Image corners
+        - real_corners (np.array): Real corners
+        - img_corners (np.array): Image corners
 
         Returns:
-        np.array: Rotation matrix
-        np.array: Translation vectors
+        - np.array: Rotation matrix
+        - np.array: Translation vectors
         """
         real_corners = np.array(real_corners, dtype=np.float32)
         img_corners = np.array(img_corners, dtype=np.float32)
