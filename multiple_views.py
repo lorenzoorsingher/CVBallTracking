@@ -120,13 +120,14 @@ while loop:
                 cv.circle(copy_frame, (x_adj, y_adj), 5, (0, 255, 0), -1)
 
             xr, yr = cam_tmp.repoject_points(np.array([X, Y, 0], np.float32))[0][0]
-            # print("xr", xr, "yr", yr)
+            print("xr", xr, "yr", yr)
             xp, yp = cv.undistortPoints(
                 np.array([xr, yr], dtype=np.float32),
                 cam_tmp.mtx,
                 cam_tmp.dist,
                 P=cam_tmp.mtx,
             )[0][0]
+            # xp, yp = xr, yr
             x_og = 3840 * (num // 5)
             y_og = 2160 * (num % 5)
 
@@ -215,19 +216,43 @@ while loop:
         tvec = np.array([x[0] for x in cur_cam.tvecs])
 
         scale = cv.getTrackbarPos("scale", "frames")
-        ux = (cam_x - 3840 / 2) / scale
-        vx = (cam_y - 2160 / 2) / scale
+        # breakpoint()
+
+        unx, uny = cv.undistortPoints(
+            np.array([[cam_x, cam_y]], dtype=np.float32),
+            cur_cam.mtx,
+            cur_cam.dist,
+            P=cur_cam.mtx,
+        )[0][0]
+        ux = (unx - 3840 / 2) / cur_cam.mtx[0][0]
+        vx = (uny - 2160 / 2) / cur_cam.mtx[1][1]
 
         print("cam: ", ux, " ", vx)
         Tx, Ty, Tz = rotm.T @ -tvec
         # dx, dy, dz = rotm.T @ np.array([(cam_x - 3840 / 2), cam_y - 2160 / 2, 1])
         dv = rotm.T @ np.array([ux, vx, 1])
-        dv /= np.linalg.norm(dv)
+        # dv /= np.linalg.norm(dv)
         dx, dy, dz = dv
 
         X = (-Tz / dz) * dx + Tx
         Y = (-Tz / dz) * dy + Ty
         # breakpoint()
+        # breakpoint()
+
+        # fc, ic = cur_cam.get_img_corners()
+        # fc = np.array(fc) * 1000
+        # ic = np.array(ic)
+        # for idx, (f, i) in enumerate(zip(fc, ic)):
+        #     imgp = cur_cam.repoject_points(f)
+
+        #     xr, yr = cur_cam.repoject_points(np.array(f, np.float32))[0][0]
+        #     xp, yp = cv.undistortPoints(
+        #         np.array([xr, yr], dtype=np.float32),
+        #         cur_cam.mtx,
+        #         cur_cam.dist,
+        #         P=cur_cam.mtx,
+        #     )[0][0]
+        #     breakpoint()
         # breakpoint()
         print(f"X: {round(X,1)} Y: {round(Y,1)}")
         print(f"d: {dx, dy, dz}")
