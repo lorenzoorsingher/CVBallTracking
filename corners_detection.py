@@ -1,9 +1,6 @@
-import os
-import json
-
 import cv2 as cv
 import numpy as np
-from random import randint, choice
+from random import choice
 from tqdm import tqdm
 
 from setup import get_args_corners
@@ -115,4 +112,4 @@ for camera_idx in cameras:
 
     all_corners = np.array(all_corners)
 
-    cam.save_dump(all_corners, frame.shape[:2][::-1])
+    cam.save_dump(all_corners)

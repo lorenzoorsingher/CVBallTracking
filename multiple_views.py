@@ -3,13 +3,7 @@ import cv2 as cv
 from camera_controller import CameraController
 from matplotlib import pyplot as plt
 from copy import copy
-import json
-import os
 
-from sympy import Plane, Line3D, Rational, Point3D
-
-from setup import get_args_pose
-from common import set_axes_equal
 from common import get_video_paths
 
 x = -1
