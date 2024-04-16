@@ -222,8 +222,7 @@ else:
     real_corners, img_corners = get_real_points(CAM_IDX)
     cam.save_img_corners(real_corners, img_corners)
 
-
-real_corners = np.array(real_corners, dtype=np.float32)
+real_corners = np.array(real_corners, dtype=np.float32) * 1000
 img_corners = np.array(img_corners, dtype=np.float32)
 
 
@@ -257,9 +256,3 @@ ax.legend()
 
 set_axes_equal(ax)
 plt.show()
-
-breakpoint()
-
-# np.linalg.norm(tvecs - field_corners[5])
-
-np.linalg.norm(tvecs[:2] - field_corners[5][:2])

@@ -172,3 +172,7 @@ class CameraController:
         self.save_calib(rvecs=rvecs, tvecs=tvecs)
 
         return self.get_camera_position()
+
+    def repoject_points(self, objp):
+        imgp, _ = cv.projectPoints(objp, self.rvecs, self.tvecs, self.mtx, self.dist)
+        return imgp
