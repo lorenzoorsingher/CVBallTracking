@@ -29,6 +29,28 @@ with open(positions_path, "r") as file:
 
 
 def draw_field(img, cam_idx, curr_corner):
+    """
+    Draws the field lines, camera position, and intersection points on the image.
+
+    Args:
+        img (numpy.ndarray): The input image.
+        cam_idx (int): The index of the camera.
+        curr_corner (int): The index of the current corner.
+
+    Returns:
+        numpy.ndarray: The image with the field lines, camera position, and intersection points drawn.
+    """
+    offx = 600
+    offy = 400
+    multiplier = 25
+    field_corners2 = [
+        [int(x * multiplier), int(y * -multiplier), z] for x, y, z in field_corners
+    ]
+
+    # Rest of the code...
+
+    return img
+def draw_field(img, cam_idx, curr_corner):
     offx = 600
     offy = 400
     multiplier = 25
@@ -139,6 +161,19 @@ def draw_field(img, cam_idx, curr_corner):
 
 
 def get_clicks(event, mouse_x, mouse_y, flags, param):
+    """
+    Callback function for mouse events.
+
+    Parameters:
+    - event: The type of mouse event.
+    - mouse_x: The x-coordinate of the mouse click.
+    - mouse_y: The y-coordinate of the mouse click.
+    - flags: Additional flags for the mouse event.
+    - param: Additional parameters passed to the callback function.
+
+    Returns:
+    None
+    """
     global x
     global y
 
@@ -150,6 +185,20 @@ def get_clicks(event, mouse_x, mouse_y, flags, param):
 cam = CameraController(CAM_IDX)
 
 
+def get_real_points(cam_idx):
+    """
+    Get the real-world coordinates and corresponding image coordinates of points clicked on the video frame.
+
+    Args:
+        cam_idx (int): The index of the camera/video source.
+
+    Returns:
+        Tuple[List[Tuple[int, int]], List[Tuple[int, int]]]: A tuple containing two lists:
+            - real_corners: The real-world coordinates of the clicked points.
+            - img_corners: The corresponding image coordinates of the clicked points.
+    """
+    # Function code here
+    pass
 def get_real_points(cam_idx):
 
     img_corners = []

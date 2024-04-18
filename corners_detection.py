@@ -9,6 +9,18 @@ from common import get_video_paths
 
 
 def get_corners(image, chessboard_size):
+    """
+    Detects and refines the corners of a chessboard pattern in an image.
+
+    Args:
+        image (numpy.ndarray): The input image.
+        chessboard_size (tuple): The size of the chessboard pattern (number of inner corners).
+
+    Returns:
+        tuple: A tuple containing the following:
+            - ret (bool): True if the chessboard pattern is found, False otherwise.
+            - corners_refined (numpy.ndarray): The refined corner coordinates if the pattern is found, None otherwise.
+    """
 
     gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     ret, corners = cv.findChessboardCorners(

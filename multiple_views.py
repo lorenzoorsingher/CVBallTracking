@@ -11,6 +11,17 @@ y = -1
 
 
 def mouse_to_img(x, y, div):
+    """
+    Converts mouse coordinates to image coordinates.
+
+    Args:
+        x (int): The x-coordinate of the mouse.
+        y (int): The y-coordinate of the mouse.
+        div (int): The division factor.
+
+    Returns:
+        tuple: A tuple containing the index, camera x-coordinate, and camera y-coordinate.
+    """
     adj_x = x * div
     adj_y = y * div
 
@@ -26,6 +37,18 @@ def mouse_to_img(x, y, div):
 
 
 def img_to_mouse(idx, x, y, div):
+    """
+    Converts image coordinates to mouse coordinates based on the given index, x, y, and division factor.
+
+    Parameters:
+    - idx (int): The index of the image.
+    - x (int): The x-coordinate in the image.
+    - y (int): The y-coordinate in the image.
+    - div (int): The division factor used for scaling.
+
+    Returns:
+    tuple: The converted x and y coordinates in the mouse coordinate system.
+    """
     x_og = 3840 * (idx // 5)
     y_og = 2160 * (idx % 5)
 
@@ -34,8 +57,19 @@ def img_to_mouse(idx, x, y, div):
 
     return x_adj, y_adj
 
-
+#flags e param non li usiamo mai, servono?
 def get_clicks(event, mouse_x, mouse_y, flags, param):
+    """
+    Callback function to handle mouse clicks.
+
+    Parameters:
+    - event: The type of mouse event.
+    - mouse_x: The x-coordinate of the mouse click.
+    - mouse_y: The y-coordinate of the mouse click.
+    - flags: Additional flags for the mouse event.
+    - param: Additional parameters passed to the callback function.
+    """
+
     global x
     global y
 
