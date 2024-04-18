@@ -75,7 +75,9 @@ def reprojection_error(corners, board, mtx, dist, frame):
 
 
 video_paths = get_video_paths()
-for camera_idx in [1, 2, 3, 4, 5, 6, 7, 8, 12]:
+targets = []
+old_targets = []
+for camera_idx in [2]:
 
     cam = CameraController(camera_idx)
     chessboard_size = cam.chessboard_size
@@ -95,9 +97,8 @@ for camera_idx in [1, 2, 3, 4, 5, 6, 7, 8, 12]:
     cv.namedWindow("reprojection", cv.WINDOW_NORMAL)
     cv.namedWindow("target", cv.WINDOW_NORMAL)
 
-    TEST_LEN = 10
-    targets = []
-    old_targets = []
+    TEST_LEN = 5
+
     reprojections = []
     errors = []
     old_errors = []
@@ -132,12 +133,13 @@ for camera_idx in [1, 2, 3, 4, 5, 6, 7, 8, 12]:
         old_target, rep, old_l2 = reprojection_error(
             corners, board, old_mtx, old_dist, frame
         )
-        targets.append(target)
-        old_targets.append(old_target)
+
         errors.append(l2)
         old_errors.append(old_l2)
-        # print("l2: ", l2)
-        # print("old_l2: ", old_l2)
+    targets.append(target)
+    old_targets.append(old_target)
+    # print("l2: ", l2)
+    # print("old_l2: ", old_l2)
 
     print("CAMERA ", camera_idx)
     print("mean l2: ", np.mean(errors))
