@@ -25,7 +25,7 @@ def set_axes_equal(ax):
     cubes as cubes, etc.
 
     Input
-      ax: a matplotlib axis, e.g., as output from plt.gca().
+        ax: a matplotlib axis, e.g., as output from plt.gca().
     """
 
     x_limits = ax.get_xlim3d()
