@@ -125,7 +125,7 @@ while loop:
 
         cam_idx = cam_idxs[idx]
         cur_cam = CameraController(cam_idx)
-
+        print(f"on camera {cam_idx}")
         rotm, _ = cv.Rodrigues(cur_cam.rvecs)
         tvec = np.array([x[0] for x in cur_cam.tvecs])
 
@@ -144,5 +144,7 @@ while loop:
 
         X = (-Tz / dz) * dx + Tx
         Y = (-Tz / dz) * dy + Ty
+
+        print(f"selected point at {round(X/1000,2)}m t {round(Y/1000,2)}m ")
 
         cv.imshow("frames", copy_frame)

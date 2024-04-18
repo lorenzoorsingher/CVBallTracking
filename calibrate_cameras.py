@@ -6,6 +6,9 @@ from setup import get_args_calib
 from camera_controller import CameraController
 
 args = get_args_calib()
+if args["cameras"] == "-1":
+    print("No camera selected, exiting...")
+    exit()
 cameras = {int(cam) for cam in args["cameras"].split(",")}
 
 

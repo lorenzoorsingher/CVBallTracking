@@ -12,7 +12,7 @@ def get_args_corners():
         "--cameras",
         type=str,
         help="Set the indexes of the cameras you want to calibrate separated by comma",
-        default="1",
+        default="-1",
         metavar="",
     )
 
@@ -49,7 +49,7 @@ def get_args_calib():
         "--cameras",
         type=str,
         help="Set the indexes of the cameras you want to calibrate separated by comma",
-        default="1",
+        default="-1",
         metavar="",
     )
 
@@ -68,7 +68,7 @@ def get_args_pose():
         "--camera",
         type=int,
         help="Set the index of the camera you want to calibrate",
-        default=1,
+        default=-1,
         metavar="",
     )
 

@@ -64,7 +64,7 @@ def reprojection_error(corners, board, mtx, dist, frame):
             (round(error[0] + sz // 2), round(error[1] + sz // 2)),
             1,
             (254, 90, 0),
-            1,
+            -1,
         )
 
     l2 = np.linalg.norm(corners - reprojected)
@@ -77,7 +77,7 @@ def reprojection_error(corners, board, mtx, dist, frame):
 video_paths = get_video_paths()
 targets = []
 old_targets = []
-for camera_idx in [2]:
+for camera_idx in [1, 2, 6]:
 
     cam = CameraController(camera_idx)
     chessboard_size = cam.chessboard_size
@@ -141,9 +141,9 @@ for camera_idx in [2]:
     # print("l2: ", l2)
     # print("old_l2: ", old_l2)
 
-    print("CAMERA ", camera_idx)
-    print("mean l2: ", np.mean(errors))
-    print("mean old_l2: ", np.mean(old_errors))
+    print("\n\nCAMERA ", camera_idx)
+    print("mean (ours) l2: \t", np.mean(errors))
+    print("mean old_l2: \t\t", np.mean(old_errors))
     incr = 100 * (np.mean(old_errors) - np.mean(errors)) / abs(np.mean(errors))
 
     print(incr.round(2), " %")

@@ -30,6 +30,9 @@ def get_corners(image, chessboard_size):
 
 
 args = get_args_corners()
+if args["cameras"] == "-1":
+    print("No camera selected, exiting...")
+    exit()
 cameras = {int(cam) for cam in args["cameras"].split(",")}
 DETECT_NUM = args["detect_num"]
 DISTANCE_THRESHOLD = args["distance_threshold"]

@@ -36,6 +36,7 @@ for cam_idx in cam_idxs:
     cam = CameraController(cam_idx)
 
     rot, pos = cam.get_camera_position()
+    print(f"cam: {cam_idx} {pos}")
     ax.scatter(pos[0][0], pos[1][0], pos[2][0], c="red", label="tvecs")
     ax.text(pos[0][0], pos[1][0], pos[2][0], str(cam_idx))
 

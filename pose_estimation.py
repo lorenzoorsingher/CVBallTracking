@@ -11,7 +11,9 @@ from common import set_axes_equal
 from common import get_video_paths
 
 args = get_args_pose()
-
+if args["camera"] == -1:
+    print("No camera selected, exiting...")
+    exit()
 CAM_IDX = args["camera"]
 REUSE = args["reuse"]
 
