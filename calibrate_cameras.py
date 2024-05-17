@@ -23,5 +23,5 @@ for camera_idx in cameras:
     ret, camera_matrix, distortion_coefficients, _, _ = cv.calibrateCamera(
         all_points, all_corners, cam.imsize, None, None
     )
-
+    print(f"[Calibration] Camera calibrated with {ret} error")
     cam.save_calib(camera_matrix, distortion_coefficients)
