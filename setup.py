@@ -20,7 +20,7 @@ def get_args_corners():
         "-dn",
         "--detect-num",
         type=int,
-        help="Minimum number of detections to stop the process",
+        help="Minimum number of detections to stop the process [20]",
         default=20,
         metavar="",
     )
@@ -29,7 +29,7 @@ def get_args_corners():
         "-dt",
         "--distance-threshold",
         type=int,
-        help="Minimum number of detections to stop the process",
+        help="Minimum number of detections to stop the process [100]",
         default=100,
         metavar="",
     )
