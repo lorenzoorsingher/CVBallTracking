@@ -7,6 +7,8 @@ from setup import get_args_corners
 from camera_controller import CameraController
 from common import get_video_paths
 
+from time import time
+
 
 def get_corners(image, chessboard_size):
     """
@@ -64,6 +66,10 @@ for camera_idx in cameras:
     idxs = [x for x in range(0, vid_len)]
 
     ret, frame = cap.read()
+
+    FAC = 4
+    small_shape = (frame.shape[1] // FAC, frame.shape[0] // FAC)
+
     canvas = np.full(frame.shape, 255, dtype=np.uint8)
 
     mid_points = []
@@ -73,40 +79,58 @@ for camera_idx in cameras:
     FRAME_PURGE_NF = 5
 
     pbar = tqdm(total=vid_len)
+    crono = time()
     while len(idxs) > 0 and len(all_corners) < DETECT_NUM:
+
+        print(round(time() - crono, 3))
+        crono = time()
+
         idx = choice(idxs)
 
         cap.set(cv.CAP_PROP_POS_FRAMES, idx)
         ret, frame = cap.read()
+        chk_frame = cv.resize(frame, small_shape)
 
         if not ret:
             break
 
-        got_corners, corners_refined = get_corners(frame, chessboard_size)
-        tooclose = False
+        chk_ret, chk_corners = cv.findChessboardCorners(
+            cv.cvtColor(chk_frame, cv.COLOR_BGR2GRAY),
+            chessboard_size,
+            cv.CALIB_CB_ADAPTIVE_THRESH
+            + cv.CALIB_CB_FAST_CHECK
+            + cv.CALIB_CB_NORMALIZE_IMAGE,
+        )
 
-        if got_corners:
+        FP = FRAME_PURGE_NF
+        if chk_ret:
+
+            tooclose = False
             mididx = (chessboard_size[0] * chessboard_size[1]) // 2
-            midpoint = corners_refined[mididx][0].astype(int)
-
+            midpoint = chk_corners[mididx][0].astype(int)
             for mp in mid_points:
                 dist = np.linalg.norm(mp - midpoint)
 
-                if dist < DISTANCE_THRESHOLD * 2:
+                if dist < DISTANCE_THRESHOLD // FAC * 2:
                     tooclose = True
                     break
 
             if not tooclose:
-                mid_points.append(midpoint)
-                cv.circle(canvas, midpoint, DISTANCE_THRESHOLD, (0, 255, 0), 10)
+                got_corners, corners_refined = get_corners(frame, chessboard_size)
 
-                all_corners.append(corners_refined)
+                if got_corners:
+                    mid_points.append(midpoint)
+                    cv.circle(
+                        canvas, midpoint * FAC, DISTANCE_THRESHOLD, (0, 255, 0), 10
+                    )
+
+                    all_corners.append(corners_refined)
+                else:
+                    print("High Res failed")
             else:
-                cv.circle(canvas, midpoint, DISTANCE_THRESHOLD, (0, 0, 255), 2)
-            cv.circle(frame, midpoint, 10, (0, 255, 255), -1)
+                cv.circle(canvas, midpoint * FAC, DISTANCE_THRESHOLD, (0, 0, 255), 2)
+            cv.circle(frame, midpoint * FAC, 10, (0, 255, 255), -1)
             FP = FRAME_PURGE
-        else:
-            FP = FRAME_PURGE_NF
 
         to_be_removed = [x for x in range(idx - FP, idx + FP) if x in idxs]
 
