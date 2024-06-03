@@ -18,8 +18,10 @@ weights = "models/v5_best.pt"
 model = YOLO(weights)
 model.to("cuda:0")
 video_path = "data/match_video/out2.mp4"
+video_path = "/home/lollo/Documents/python/yolo/data/video/out6.mp4"
 
 cap = cv.VideoCapture(video_path)
+cap.set(cv.CAP_PROP_POS_FRAMES, 500)
 
 ret, frame = cap.read()
 
@@ -31,7 +33,7 @@ x = 700
 h = 1500
 w = 3000
 
-cropped = frame[y:h, x:w]
+cropped = frame  # [y:h, x:w]
 
 # cv.imshow("frame", cropped)
 
@@ -42,7 +44,7 @@ while cap.isOpened():
     if not ret:
         break
 
-    cropped = copy(frame[y:h, x:w])
+    cropped = copy(frame)  # [y:h, x:w])
 
     # results = model(frame, show=True)  # predict on an image
     output = model.predict(cropped, show=True, classes=[0], device="cuda:0")
