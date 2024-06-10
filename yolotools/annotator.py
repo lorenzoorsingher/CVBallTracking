@@ -91,7 +91,7 @@ while True:
         if start == (-1, -1) or end == (-1, -1):
             print("NO ANNOTATION TO SAVE")
             continue
-
+        print(f"START: {start} END: {end}")
         startx, starty = start
         endx, endy = end
         n_startx = startx / uframe.shape[1]
@@ -99,7 +99,7 @@ while True:
         n_endx = endx / uframe.shape[1]
         n_endy = endy / uframe.shape[0]
 
-        center = ((n_startx + n_endx) / 2, (n_starty + n_endy) / 1)
+        center = ((n_startx + n_endx) / 2, (n_starty + n_endy) / 2)
         width = abs(n_startx - n_endx)
         height = abs(n_starty - n_endy)
 
