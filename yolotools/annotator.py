@@ -70,7 +70,8 @@ while True:
     ret, frame = cap.read()
     if not ret:
         curr_cam_idx = (curr_cam_idx + 1) % (len(cam_idxs))
-        break
+        cap.set(cv.CAP_PROP_POS_FRAMES, rand_frame)
+        continue
 
     uframe = cam.undistort_img(frame)
 
@@ -127,6 +128,10 @@ while True:
     if k == ord("a"):
         print(f"MOVING BACK {frame_skip} FRAMES")
         cap.set(cv.CAP_PROP_POS_FRAMES, cap.get(cv.CAP_PROP_POS_FRAMES) - frame_skip)
+    if k == ord("r"):
+        print(f"JUMP TO RANDOM FRAME")
+        rand_frame = random.randint(0, cap.get(cv.CAP_PROP_FRAME_COUNT) - 1)
+        cap.set(cv.CAP_PROP_POS_FRAMES, rand_frame)
     if k == ord("n"):
         curr_cam_idx = (curr_cam_idx + 1) % (len(cam_idxs))
         print(f"SWITCHED TO CAMERA{cam_idxs[curr_cam_idx]}")
