@@ -3,7 +3,9 @@ import cv2 as cv
 import numpy as np
 
 
-dataset_path = "/home/lollo/Documents/python/yolo/datasets/amogus"
+dataset_path = (
+    "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/fakebasket"
+)
 
 folder = os.path.join(dataset_path, "test")
 folder = dataset_path
