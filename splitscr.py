@@ -20,7 +20,7 @@ model_path = (
 )
 model = YOLO(model_path)
 
-sliced_yolo = SlicedYolo(model_path=model_path, wsize=(640, 640), overlap=0.1)
+sliced_yolo = SlicedYolo(model_path=model_path, wsize=(640, 640), overlap=(0.05, 0.1))
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
 videos_path = "/home/lollo/Documents/python/CV/CVBallTracking/data/fake_basket"
@@ -30,9 +30,9 @@ caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
 
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
-curr_cam_idx = 0
+curr_cam_idx = 4
 frame_skip = 10
-frame_idx = 0
+frame_idx = 1500
 while True:
 
     cap = caps[curr_cam_idx]
@@ -58,7 +58,9 @@ while True:
             uframe, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (0, 255, 0), 8
         )
 
-    cv.imshow("frame", uframe)
+    # frame = sliced_yolo.print_windows(uframe)
+
+    cv.imshow("frame", frame)
     k = cv.waitKey(1)
 
     if k == ord("n"):
