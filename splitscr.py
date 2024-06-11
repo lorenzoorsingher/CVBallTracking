@@ -23,38 +23,50 @@ model = YOLO(model_path)
 sliced_yolo = SlicedYolo(model_path=model_path, wsize=(640, 640), overlap=0.1)
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
-ann_num = [0, 0, 0, 0, 0, 0, 0, 0]
 videos_path = "/home/lollo/Documents/python/CV/CVBallTracking/data/fake_basket"
 video_paths = [f"{videos_path}/out{cam_idx}.mp4" for cam_idx in cam_idxs]
 cams = [CameraController(cam_idx) for cam_idx in cam_idxs]
 caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
-idx = 4
-cap = caps[idx]
-cam = cams[idx]
+
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
-cap.set(cv.CAP_PROP_POS_FRAMES, 1500)
 
-
-spl_size = 640
-
+curr_cam_idx = 0
+frame_skip = 10
+frame_idx = 0
 while True:
+
+    cap = caps[curr_cam_idx]
+    cam = cams[curr_cam_idx]
+
+    cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx)
     ret, frame = cap.read()
-
-    frame = cam.undistort_img(frame)
-
     if not ret:
-        break
+        frame_idx = 0
+        continue
+    else:
+        frame_idx += 1
 
-    out, det = sliced_yolo.predict(frame)
+    uframe = cam.undistort_img(frame)
+
+    out, det = sliced_yolo.predict(uframe)
 
     if out is not None:
 
         x, y, w, h, c = out
 
-        frame = cv.rectangle(
-            frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (0, 255, 0), 8
+        uframe = cv.rectangle(
+            uframe, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (0, 255, 0), 8
         )
 
-    cv.imshow("frame", frame)
-    if cv.waitKey(1) & 0xFF == ord("q"):
+    cv.imshow("frame", uframe)
+    k = cv.waitKey(1)
+
+    if k == ord("n"):
+        curr_cam_idx = (curr_cam_idx + 1) % (len(cam_idxs))
+        print(f"SWITCHED TO CAMERA{cam_idxs[curr_cam_idx]}")
+    if k == ord("d"):
+        print(f"SKIPPING {frame_skip} FRAMES")
+        frame_idx += frame_skip
+    if k == ord("q"):
+        print("EXITING")
         break

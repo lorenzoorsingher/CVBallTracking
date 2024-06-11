@@ -69,8 +69,7 @@ while True:
     cam = cams[curr_cam_idx]
     ret, frame = cap.read()
     if not ret:
-        curr_cam_idx = (curr_cam_idx + 1) % (len(cam_idxs))
-        cap.set(cv.CAP_PROP_POS_FRAMES, rand_frame)
+        cap.set(cv.CAP_PROP_POS_FRAMES, 0)
         continue
 
     uframe = cam.undistort_img(frame)
