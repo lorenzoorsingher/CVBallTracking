@@ -13,7 +13,7 @@ import random
 import time
 
 from ultralytics import YOLO
-from sliced_yolo import SlicedYolo
+from yolotools.sliced_yolo import SlicedYolo
 
 model_path = (
     "/home/lollo/Documents/python/CV/CVBallTracking/runs/detect/train2/weights/best.pt"

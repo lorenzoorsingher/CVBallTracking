@@ -1,8 +1,8 @@
-from ultralytics import YOLO
 import cv2 as cv
-import numpy as np
-from random import randint
 import torch
+
+from random import randint
+from ultralytics import YOLO
 
 
 class SlicedYolo:
