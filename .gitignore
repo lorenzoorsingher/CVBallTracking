@@ -1,8 +1,11 @@
 *.mp4
+*.jpg
+*.png
+*.txt
 *.pyc
 *.json
 
 *.pt
 
 runs/
-yolotools/datasets
+yolotools/datasets/

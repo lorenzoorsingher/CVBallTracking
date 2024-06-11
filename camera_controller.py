@@ -242,3 +242,15 @@ class CameraController:
         self.save_calib(rvecs=rvecs, tvecs=tvecs)
 
         return self.get_camera_position()
+
+    def undistort_img(self, img):
+        """
+        Undistort image using camera matrix and distortion coefficients
+
+        Parameters:
+        - img (np.array): Image to undistort
+
+        Returns:
+        - np.array: Undistorted image
+        """
+        return cv.undistort(img, self.mtx, self.dist, None, self.mtx)
