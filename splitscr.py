@@ -20,7 +20,7 @@ model_path = (
 )
 model = YOLO(model_path)
 
-sliced_yolo = SlicedYolo(model_path=model_path, wsize=(640, 720))
+sliced_yolo = SlicedYolo(model_path=model_path, wsize=(640, 640), overlap=0.1)
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
 ann_num = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -41,44 +41,20 @@ while True:
     ret, frame = cap.read()
 
     frame = cam.undistort_img(frame)
-    sliced_yolo.predict(frame)
+
     if not ret:
         break
-    fra_x = frame.shape[1]
-    fra_y = frame.shape[0]
 
-    n_y = fra_y // spl_size
-    n_x = fra_x // spl_size
+    out, det = sliced_yolo.predict(frame)
 
-    windows = []
-    for i in range(n_y):
-        for j in range(n_x):
-            x = j * spl_size
-            y = i * spl_size
-            # cv.rectangle(frame, (x, y), (x + spl_size, y + spl_size), (0, 255, 0), 2)
-            windows.append(frame[y : y + spl_size, x : x + spl_size])
-    # breakpoint()
+    if out is not None:
 
-    for window in windows:
-        result = model.predict(window)
-        boxes = result[0].boxes.xywh.cpu().tolist()
-        for box in boxes:
-            x, y, w, h = map(int, box)
-            cv.rectangle(
-                window,
-                (x - w // 2, y - h // 2),
-                (x + w // 2, y + h // 2),
-                (0, 255, 0),
-                2,
-            )
+        x, y, w, h, c = out
 
-    recomposed = np.zeros((fra_y, fra_x, 3), dtype=np.uint8)
-    for i in range(n_y):
-        for j in range(n_x):
-            x = j * spl_size
-            y = i * spl_size
-            recomposed[y : y + spl_size, x : x + spl_size] = windows[i * n_x + j]
+        frame = cv.rectangle(
+            frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (0, 255, 0), 8
+        )
 
-    cv.imshow("frame", recomposed)
+    cv.imshow("frame", frame)
     if cv.waitKey(1) & 0xFF == ord("q"):
         break

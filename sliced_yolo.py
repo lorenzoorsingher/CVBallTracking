@@ -1,65 +1,87 @@
 from ultralytics import YOLO
 import cv2 as cv
 import numpy as np
+from random import randint
+import torch
 
 
 class SlicedYolo:
-    def __init__(self, model_path="", grid=(-1, -1), wsize=(640, 640)):
+    def __init__(self, model_path="", wsize=(640, 640), overlap=0):
 
         self.model_path = model_path
-        self.grid = grid
         self.wsize = wsize
+        self.overlap = overlap
         self.model = YOLO(model_path)
 
-    def predict(self, frame):
-        cv.namedWindow("frame", cv.WINDOW_NORMAL)
-        imsize = frame.shape[:2][::-1]
-        if self.grid[0] == -1:
-            window_size = self.wsize
-        else:
-            window_size = (
-                imsize[0] // self.grid[0],
-                imsize[1] // self.grid[1],
+    def print_windows(self, frame, origins):
+        for ori in origins:
+            x, y = ori
+            cv.rectangle(
+                frame,
+                (x, y),
+                (x + self.wsize[0], y + self.wsize[1]),
+                (randint(100, 200), randint(100, 200), 0),
+                15,
             )
+        return frame
+
+    def get_windows(self, imsize):
+        window_size = self.wsize
 
         print("window_size ", window_size)
         print("imsize ", imsize)
-        nx = imsize[0] // window_size[0]
-        ny = imsize[1] // window_size[1]
-        xpad = imsize[0] - nx * window_size[0]
-        ypad = imsize[1] - ny * window_size[1]
 
-        windows = []
+        o_size = int(window_size[0] * self.overlap)
+
+        nx = (imsize[0] - window_size[0]) // (window_size[0] - o_size) + 1
+        ny = (imsize[1] - window_size[1]) // (window_size[1] - o_size) + 1
+
+        xpad = imsize[0] - nx * (window_size[0] - o_size)
+        ypad = imsize[1] - ny * (window_size[1] - o_size)
+
+        origins = []
         for i in range(nx):
             for j in range(ny):
-                x = i * window_size[0] + xpad
-                y = j * window_size[1] + ypad
-                cv.rectangle(
-                    frame,
-                    (x, y),
-                    (x + window_size[0], y + window_size[1]),
-                    (0, 255, 0),
-                    2,
-                )
-                window = {
-                    "image": frame[
-                        y : y + window_size[1],
-                        x : x + window_size[0],
-                    ],
-                    "coo": (x, y, window_size[0], window_size[1]),
-                }
-                windows.append(window)
+                x = i * (window_size[0] - o_size) + xpad // 2
+                y = j * (window_size[1] - o_size) + ypad // 2
+                origins.append((x, y))
+        return origins
 
-        new_frame = np.zeros_like(frame)
+    def predict(self, frame):
 
+        cv.namedWindow("frame", cv.WINDOW_NORMAL)
+        imsize = frame.shape[:2][::-1]
+        origins = self.get_windows(imsize)
+
+        # wframe = self.print_windows(frame.copy(), origins)
+
+        windows = []
+        for origin in origins:
+            x, y = origin
+            window = {
+                "image": frame[
+                    y : y + self.wsize[1],
+                    x : x + self.wsize[0],
+                ],
+                "coo": (x, y, self.wsize[0], self.wsize[1]),
+            }
+            windows.append(window)
+
+        detections = []
         for win in windows:
-            x, y, xsize, ysize = win["coo"]
-            new_frame[
-                y : y + ysize,
-                x : x + xsize,
-            ] = win["image"]
 
-        cv.imshow("frame", new_frame)
-        cv.waitKey(0)
-        # result = self.model.predict(frame)
-        # return result
+            img = win["image"]
+            real_x, real_y, _, _ = win["coo"]
+            result = self.model.predict(img, verbose=False)
+            boxes = result[0].boxes.xywh.cpu().tolist()
+
+            for idx, box in enumerate(boxes):
+                conf = result[0].boxes.conf.tolist()[idx]
+                x, y, w, h = map(int, box)
+                detections.append((x + real_x, y + real_y, w, h, conf))
+
+        if len(detections) == 0:
+            return None, None
+        else:
+            out = detections[torch.argmax(torch.tensor(detections).T[-1]).item()]
+            return out, detections
