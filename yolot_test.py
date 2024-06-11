@@ -3,6 +3,9 @@ from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator
 import cv2 as cv
 
+from camera_controller import CameraController
+
+
 from sahi.utils.yolov8 import download_yolov8s_model
 from sahi import AutoDetectionModel
 from sahi.utils.cv import read_image
@@ -16,43 +19,36 @@ import numpy as np
 
 from copy import copy
 
-# Download YOLOv8 model
-yolov8_model_path = "models/best.pt"
-download_yolov8s_model(yolov8_model_path)
 
-# Download test images
-download_from_url(
-    "https://raw.githubusercontent.com/obss/sahi/main/demo/demo_data/small-vehicles1.jpeg",
-    "demo_data/small-vehicles1.jpeg",
+model_path = (
+    "/home/lollo/Documents/python/CV/CVBallTracking/runs/detect/train7/weights/best.pt"
 )
-download_from_url(
-    "https://raw.githubusercontent.com/obss/sahi/main/demo/demo_data/terrain2.png",
-    "demo_data/terrain2.png",
-)
-
-
-model_path = "/home/lollo/Documents/python/yolo/runs/detect/train12/weights/best.pt"
-model_path = "models/best_mogus.pt"
 
 detection_model = AutoDetectionModel.from_pretrained(
-    model_type="yolov8",
+    model_type="yolov5",
     model_path=model_path,
-    confidence_threshold=0.001,
+    confidence_threshold=0.1,
     device="cuda:0",  # or 'cuda:0'
-    image_size=640,
+    # image_size=640,
 )
 
-# Load a model
-# model = YOLO("yolov8s-p2.yaml").load("yolov8s.pt")
 
-video_path = "data/match_video/out2.mp4"
+cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
+ann_num = [0, 0, 0, 0, 0, 0, 0, 0]
+videos_path = "/home/lollo/Documents/python/CV/CVBallTracking/data/fake_basket"
+video_paths = [f"{videos_path}/out{cam_idx}.mp4" for cam_idx in cam_idxs]
 
-video_path = "/home/lollo/Documents/python/yolo/data/video/out6.mp4"
+cams = [CameraController(cam_idx) for cam_idx in cam_idxs]
 
-cap = cv.VideoCapture(video_path)
+caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
+
+idx = 0
+
+cap = caps[idx]
+cam = cams[idx]
 
 ret, frame = cap.read()
-cap.set(cv.CAP_PROP_POS_FRAMES, 500)
+cap.set(cv.CAP_PROP_POS_FRAMES, 1500)
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
 
@@ -68,6 +64,8 @@ cropped = frame[y:h, x:w]
 
 while cap.isOpened():
     ret, frame = cap.read()
+
+    frame = cam.undistort_img(frame)
 
     if not ret:
         break

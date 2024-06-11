@@ -3,8 +3,10 @@ import sys
 import shutil
 import random
 
-ogpath = "/home/lollo/Documents/python/yolo/datasets/amogus"
-dest_path = "/home/lollo/Documents/python/yolo/datasets/mogusBig"
+ogpath = (
+    "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega"
+)
+dest_path = "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega_split"
 
 
 allfiles = os.listdir(ogpath + "/images")

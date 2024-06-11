@@ -24,7 +24,7 @@ def alb_to_yolo(label):
 
 transform = A.Compose(
     [
-        A.RandomCrop(width=640, height=640, p=0.8),
+        A.RandomCrop(width=640, height=640),
         A.HorizontalFlip(p=0.5),
         A.RandomBrightnessContrast(p=0.2),
     ],
@@ -32,7 +32,15 @@ transform = A.Compose(
 )
 
 
-dataset_path = "/home/lollo/Documents/python/yolo/datasets/ayy"
+dataset_path = (
+    "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_1"
+)
+
+target_ds = (
+    "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_aug"
+)
+target_imgs = os.path.join(target_ds, "images")
+target_labels = os.path.join(target_ds, "labels")
 
 # folder = os.path.join(dataset_path, "test")
 folder = dataset_path
@@ -164,9 +172,6 @@ while True:
     cv.imshow("img", show_image)
     cv.waitKey(1)
 
-target_ds = "/home/lollo/Documents/python/yolo/datasets/amogus"
-target_imgs = os.path.join(target_ds, "images")
-target_labels = os.path.join(target_ds, "labels")
 
 print(f"Final number of images: {len(images_fin)}")
 
