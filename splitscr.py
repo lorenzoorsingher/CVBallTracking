@@ -13,14 +13,14 @@ import random
 import time
 
 from ultralytics import YOLO
-from yolotools.sliced_yolo import SlicedYolo
+from yolotools.sliced_yolo import SlicedYOLO
 
 model_path = (
     "/home/lollo/Documents/python/CV/CVBallTracking/runs/detect/train2/weights/best.pt"
 )
 model = YOLO(model_path)
 
-sliced_yolo = SlicedYolo(model_path=model_path, wsize=(640, 640), overlap=(0.05, 0.1))
+sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.05, 0.1))
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
 videos_path = "/home/lollo/Documents/python/CV/CVBallTracking/data/fake_basket"

@@ -5,7 +5,7 @@ from random import randint
 from ultralytics import YOLO
 
 
-class SlicedYolo:
+class SlicedYOLO:
     def __init__(self, model_path="", wsize=(640, 640), overlap=(0, 0)):
 
         self.model_path = model_path
@@ -50,7 +50,7 @@ class SlicedYolo:
                 origins.append((x, y))
         return origins
 
-    def predict(self, frame, scale=1.0):
+    def predict(self, frame, scale=1.0, viz=False):
 
         cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
@@ -102,7 +102,16 @@ class SlicedYolo:
         # distances = torch.norm(vec1 - vec2, dim=2)
 
         if len(detections) == 0:
-            return None, None
+            return None, None, None
         else:
+
             out = detections[torch.argmax(torch.tensor(detections).T[-1]).item()]
-            return out, detections
+            x, y, w, h, c = out
+            uframe = cv.rectangle(
+                uframe,
+                (x - w // 2, y - h // 2),
+                (x + w // 2, y + h // 2),
+                (0, 255, 0),
+                8,
+            )
+            return out, detections, frame
