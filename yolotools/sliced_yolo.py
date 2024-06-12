@@ -48,6 +48,8 @@ class SlicedYOLO:
                 x = i * (window_size[0] - ox_size) + xpad // 2
                 y = j * (window_size[1] - oy_size) + ypad // 2
                 origins.append((x, y))
+
+        breakpoint()
         return origins
 
     def predict(self, frame, scale=1.0, viz=False):
@@ -77,6 +79,19 @@ class SlicedYOLO:
             windows.append(window)
 
         detections = []
+
+        batch = []
+
+        print(f"Inferencing on {len(windows)} windows")
+
+        for win in windows:
+
+            img = win["image"]
+            real_x, real_y, _, _ = win["coo"]
+
+            batch.append(img)
+        result = self.model.predict(batch, verbose=False)
+
         for win in windows:
 
             img = win["image"]

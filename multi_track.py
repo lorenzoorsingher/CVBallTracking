@@ -54,7 +54,7 @@ model_path = (
 )
 model = YOLO(model_path)
 
-sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.8, 0.8))
+sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.1, 0.1))
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
 videos_path = "/home/lollo/Documents/python/CV/CVBallTracking/data/fake_basket"
