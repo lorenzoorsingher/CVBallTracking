@@ -87,7 +87,7 @@ class SlicedYOLO:
             boxes = result.boxes.xywh.cpu().tolist()
             real_x, real_y, _, _ = win["coo"]
             for idx, box in enumerate(boxes):
-                conf = result[0].boxes.conf.tolist()[idx]
+                conf = result.boxes.conf.tolist()[idx]
                 x, y, w, h = map(int, box)
 
                 if scale != 1.0:
