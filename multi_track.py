@@ -77,18 +77,17 @@ while True:
     all_frames = []
     all_dets = {}
     ret = True
+
+    start = time.time()
     for curr_cam_idx in range(len(cam_idxs)):
         cap = caps[curr_cam_idx]
         cam = cams[curr_cam_idx]
-        # curr_tracker = trackers[curr_cam_idx]
 
-        cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx)
         ret, frame = cap.read()
         if not ret:
             print("[TRACK] Frame corrupted, exiting...")
             exit()
 
-        # uframe = cam.undistort_img(frame)
         uframe = frame
 
         out, det, uframe = sliced_yolo.predict(uframe, viz=True)
@@ -97,8 +96,9 @@ while True:
             x, y, w, h, c = out
             all_dets[curr_cam_idx] = [x + w // 2, y + h // 2]
         all_frames.append(cv.resize(uframe, (640, 480)))
-
-    frame_idx += 1
+    end = time.time() - start
+    print(f"DETECTION TIME: {end}")
+    frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
 
     final_point = CameraController.detections_to_point(all_dets, cams)
 
@@ -116,9 +116,7 @@ while True:
     k = cv.waitKey(1)
     if k == ord("d"):
         print(f"SKIPPING {frame_skip} FRAMES")
-        frame_idx += frame_skip
+        cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx + frame_skip)
     if k == ord("q"):
         print("EXITING")
         break
-
-plt.pause(100000000)
