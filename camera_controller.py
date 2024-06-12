@@ -254,3 +254,30 @@ class CameraController:
         - np.array: Undistorted image
         """
         return cv.undistort(img, self.mtx, self.dist, None, self.mtx)
+
+    def get_projection_matrix(self):
+        """
+        Get the projection matrix of the camera
+
+        Returns:
+        - np.array: Projection matrix
+        """
+
+        rot_mtx, _ = cv.Rodrigues(self.rvecs)
+        # T = np.eye(4, dtype=np.float64)
+        # T[:3, :3] = rot_mtx
+        # T[:3, 3] = self.tvecs.T
+        # breakpoint()
+        # # np.dot(self.mtx, np.hstack((rot_mtx, self.tvecs)))
+        return np.dot(self.mtx, np.hstack((rot_mtx, self.tvecs)))
+
+    def triangulate(self, cam2, point2d1, point2d2):
+        proj1 = self.get_projection_matrix()
+        proj2 = cam2.get_projection_matrix()
+
+        point2d1 = np.array([point2d1], dtype=np.float32)
+        point2d2 = np.array([point2d2], dtype=np.float32)
+
+        point4d = cv.triangulatePoints(proj1, proj2, point2d1.T, point2d2.T)
+        point3d = cv.convertPointsFromHomogeneous(point4d.T)[0][0]
+        return point3d
