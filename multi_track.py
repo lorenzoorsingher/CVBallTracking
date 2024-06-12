@@ -100,7 +100,7 @@ model_path = (
 )
 model = YOLO(model_path)
 
-sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.8, 0.8))
+sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.1, 0.1))
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
 videos_path = "/home/lollo/Documents/python/CV/CVBallTracking/data/fake_basket"
@@ -123,6 +123,8 @@ while True:
     all_frames = []
     all_dets = {}
     ret = True
+
+    start = time.time()
     for curr_cam_idx in range(len(cam_idxs)):
         cap = caps[curr_cam_idx]
         cam = cams[curr_cam_idx]
@@ -137,14 +139,15 @@ while True:
         # uframe = cam.undistort_img(frame)
         uframe = frame
 
-        out, det = sliced_yolo.predict(uframe, viz=True)
+        out, det, uframe = sliced_yolo.predict(uframe, viz=True)
 
         if out is not None:
             x, y, w, h, c = out
             all_dets[curr_cam_idx] = [x + w // 2, y + h // 2]
 
         all_frames.append(cv.resize(uframe, (640, 480)))
-
+    end = time.time() - start
+    print(f"Time: {end}")
     frame_idx += 1
 
     final_point = detections_to_point(all_dets)

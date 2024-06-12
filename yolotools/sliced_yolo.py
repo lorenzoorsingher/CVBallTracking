@@ -102,13 +102,13 @@ class SlicedYOLO:
         # distances = torch.norm(vec1 - vec2, dim=2)
 
         if len(detections) == 0:
-            return None, None, None
+            return None, None, frame
         else:
 
             out = detections[torch.argmax(torch.tensor(detections).T[-1]).item()]
             x, y, w, h, c = out
-            uframe = cv.rectangle(
-                uframe,
+            frame = cv.rectangle(
+                frame,
                 (x - w // 2, y - h // 2),
                 (x + w // 2, y + h // 2),
                 (0, 255, 0),
