@@ -1,16 +1,16 @@
-import os
 import sys
 
 sys.path.append(".")
 
-import json
-import numpy as np
-import cv2 as cv
-import shutil
-from camera_controller import CameraController
-from common import get_video_paths
 import random
 import time
+import os
+
+import cv2 as cv
+
+from camera_controller import CameraController
+from common import get_video_paths
+
 
 drawing = False  # true if mouse is pressed
 start, end = (-1, -1), (-1, -1)

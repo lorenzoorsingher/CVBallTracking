@@ -57,6 +57,43 @@ def get_args_calib():
     return args
 
 
+def get_args_agument():
+    parser = argparse.ArgumentParser(
+        prog="agument.py",
+        description="""Agument dataset""",
+    )
+
+    parser.add_argument(
+        "-d",
+        "--dataset",
+        type=str,
+        help="Dataset path",
+        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_1",
+        metavar="",
+    )
+
+    parser.add_argument(
+        "-t",
+        "--target_dataset",
+        type=str,
+        help="Target dataset path",
+        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega",
+        metavar="",
+    )
+
+    parser.add_argument(
+        "-s",
+        "--samples",
+        type=int,
+        help="Set the amount of samples to generate",
+        default=4000,
+        metavar="",
+    )
+
+    args = vars(parser.parse_args())
+    return args
+
+
 def get_args_pose():
     parser = argparse.ArgumentParser(
         prog="pose_estimation.py",
