@@ -66,8 +66,13 @@ caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
 
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
+
 frame_skip = 10
-frame_idx = 200
+START = 200
+frame_idx = START
+if START > 0:
+    for cap in caps:
+        cap.set(cv.CAP_PROP_POS_FRAMES, START)
 
 
 tracked_points = []
@@ -78,7 +83,6 @@ while True:
     all_dets = {}
     ret = True
 
-    start = time.time()
     for curr_cam_idx in range(len(cam_idxs)):
         cap = caps[curr_cam_idx]
         cam = cams[curr_cam_idx]
@@ -96,8 +100,7 @@ while True:
             x, y, w, h, c = out
             all_dets[curr_cam_idx] = [x + w // 2, y + h // 2]
         all_frames.append(cv.resize(uframe, (640, 480)))
-    end = time.time() - start
-    print(f"DETECTION TIME: {end}")
+
     frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
 
     final_point = CameraController.detections_to_point(all_dets, cams)
