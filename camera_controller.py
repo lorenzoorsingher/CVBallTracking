@@ -1,5 +1,6 @@
 import os
 import json
+import torch
 import numpy as np
 import cv2 as cv
 
@@ -281,3 +282,49 @@ class CameraController:
         point4d = cv.triangulatePoints(proj1, proj2, point2d1.T, point2d2.T)
         point3d = cv.convertPointsFromHomogeneous(point4d.T)[0][0]
         return point3d
+
+    @staticmethod
+    def detections_to_point(all_dets, cams):
+        if len(all_dets.keys()) < 2:
+            return None
+
+        trianglated_points = []
+        checked = {}
+        for cam_idx_1, det1 in all_dets.items():
+            for cam_idx_2, det2 in all_dets.items():
+                if cam_idx_1 == cam_idx_2:
+                    continue
+                if (cam_idx_2, cam_idx_1) in checked:
+                    continue
+                checked[(cam_idx_1, cam_idx_2)] = True
+                cam1 = cams[cam_idx_1]
+                cam2 = cams[cam_idx_2]
+
+                point3d = cam1.triangulate(cam2, det1, det2)
+
+                trianglated_points.append(point3d)
+
+                # print(f"cam{cam_idx_1} -> cam{cam_idx_2} \t {point3d}")
+
+        trianglated_points = np.array(trianglated_points)
+
+        vec1 = torch.tensor(trianglated_points).unsqueeze(0)
+        vec2 = torch.tensor(trianglated_points).unsqueeze(1)
+        distances = torch.norm(vec1 - vec2, dim=2)
+
+        good_points = []
+        for i in range(distances.shape[0]):
+            for j in range(i, distances.shape[1]):
+                if distances[i][j] < 1000 and i != j:
+                    # print(f"{distances[i][j]} \t {trianglated_points[i]}")
+                    # print(f"{distances[i][j]}\t [{i} {j}]")
+                    if i not in good_points:
+                        good_points.append(i)
+
+        good_points = np.array([trianglated_points[i] for i in good_points])
+
+        if len(good_points) == 0:
+            return None
+
+        final_point = np.mean(good_points, axis=0)
+        return final_point
