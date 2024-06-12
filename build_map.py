@@ -1,0 +1,110 @@
+import sys
+
+sys.path.append(".")
+
+import torch
+import cv2 as cv
+import json
+
+from matplotlib import pyplot as plt
+from ultralytics import YOLO
+
+from sort import *
+from common import set_axes_equal
+
+from camera_controller import CameraController
+from yolotools.sliced_yolo import SlicedYolo
+
+
+positions_path = "data/camera_data/camera_positions.json"
+with open(positions_path, "r") as file:
+
+    data = json.load(file)
+    positions = data["positions"]
+    field_corners = np.array(data["field_corners"]) * 1000
+# Scale the axes equally
+fig = plt.figure()
+ax = fig.add_subplot(111, projection="3d")
+ax.set_box_aspect([1, 1, 1])
+plt.ion()
+plt.show()
+# Plotting real_corners
+ax.scatter(
+    field_corners[:, 0],
+    field_corners[:, 1],
+    field_corners[:, 2],
+    c="red",
+    label="Real Corners",
+)
+set_axes_equal(ax)
+
+
+def plot_3d_points(points):
+
+    ax.scatter(
+        points[:, 0],
+        points[:, 1],
+        points[:, 2],
+        c="blue",
+        label="Real Corners",
+    )
+    plt.pause(1)
+
+
+dump = []
+with open("dett.txt", "r") as f:
+    lines = f.readlines()
+    for line in lines:
+        frame_idx, cam_idx, x, y = line.strip().split(";")
+        frame_idx = int(frame_idx)
+        cam_idx = int(cam_idx)
+        x = float(x)
+        y = float(y)
+        dump.append([frame_idx, cam_idx, x, y])
+################################
+
+cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
+videos_path = "/home/lollo/Documents/python/CV/CVBallTracking/data/fake_basket"
+video_paths = [f"{videos_path}/out{cam_idx}.mp4" for cam_idx in cam_idxs]
+cams = [CameraController(cam_idx) for cam_idx in cam_idxs]
+caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
+# trackers = [Sort() for _ in range(len(cam_idxs))]
+
+
+cv.namedWindow("frame", cv.WINDOW_NORMAL)
+
+curr_cam_idx = 4
+frame_skip = 10
+frame_idx = 200
+
+
+steps = []
+new_step = {}
+frame_idx = -1
+while True:
+
+    step = dump.pop(0)
+    frm_idx, cam_idx, x, y = step
+    if frame_idx != frm_idx:
+        steps.append([frame_idx, new_step])
+        frame_idx = frm_idx
+        new_step = {}
+    new_step[cam_idx] = [x, y]
+    if len(dump) == 0:
+        steps.append([frame_idx, new_step])
+        steps.pop(0)
+        break
+breakpoint()
+
+
+for step in steps:
+    frm_idx, point = step
+
+    ax.scatter(
+        point[0],
+        point[1],
+        point[2],
+        c="blue",
+        label="Real Corners",
+    )
+    plt.pause(4)
