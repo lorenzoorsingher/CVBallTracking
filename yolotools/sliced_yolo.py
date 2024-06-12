@@ -50,9 +50,15 @@ class SlicedYolo:
                 origins.append((x, y))
         return origins
 
-    def predict(self, frame):
+    def predict(self, frame, scale=1.0):
 
         cv.namedWindow("frame", cv.WINDOW_NORMAL)
+
+        if scale != 1.0:
+            frame = cv.resize(
+                frame, (int(frame.shape[1] * scale), int(frame.shape[0] * scale))
+            )
+
         imsize = frame.shape[:2][::-1]
         origins = self.get_windows(imsize)
 
@@ -81,7 +87,19 @@ class SlicedYolo:
             for idx, box in enumerate(boxes):
                 conf = result[0].boxes.conf.tolist()[idx]
                 x, y, w, h = map(int, box)
+
+                if scale != 1.0:
+                    x = int(x / scale)
+                    y = int(y / scale)
+                    w = int(w / scale)
+                    h = int(h / scale)
+
                 detections.append((x + real_x, y + real_y, w, h, conf))
+
+        # TODO: merge adjacent detections
+        # vec1 = torch.tensor(detections).T[:2].T.unsqueeze(0)
+        # vec2 = torch.tensor(detections).T[:2].T.unsqueeze(1)
+        # distances = torch.norm(vec1 - vec2, dim=2)
 
         if len(detections) == 0:
             return None, None
