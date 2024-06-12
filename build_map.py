@@ -46,8 +46,6 @@ def from_file():
             break
     return steps
 
-
-def detections_to_point(all_dets):
     if len(all_dets.keys()) < 2:
         return None
 
@@ -120,10 +118,11 @@ if __name__ == "__main__":
     steps = from_file()
 
     plot_points = []
+    final_point = None
     for step in steps[500:2000]:
         frm_idx, all_dets = step
 
-        final_point = detections_to_point(all_dets)
+        final_point = CameraController.detections_to_point(all_dets, cams, final_point)
         print(f"FINAL POINT: {final_point}")
         if final_point is not None:
             plot_points.append(final_point)

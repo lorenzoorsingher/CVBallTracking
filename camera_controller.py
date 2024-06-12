@@ -284,11 +284,12 @@ class CameraController:
         return point3d
 
     @staticmethod
-    def detections_to_point(all_dets, cams):
+    def detections_to_point(all_dets, cams, prev_est=None):
         if len(all_dets.keys()) < 2:
             return None
 
-        trianglated_points = []
+        triangulated_points = []
+        triangulating_cams = []
         checked = {}
         for cam_idx_1, det1 in all_dets.items():
             for cam_idx_2, det2 in all_dets.items():
@@ -302,29 +303,71 @@ class CameraController:
 
                 point3d = cam1.triangulate(cam2, det1, det2)
 
-                trianglated_points.append(point3d)
+                triangulated_points.append(point3d)
 
+                dist1 = np.linalg.norm(point3d - cam1.tvecs.T)
+                dist2 = np.linalg.norm(point3d - cam2.tvecs.T)
+                avdist = (dist1 + dist2) / 2
+                # triangulating_cams.append([cam_idx_1, cam_idx_2])
+                # print(
+                #     f"cam{cam_idx_1} -> cam{cam_idx_2} \t {point3d} \t {round((dist1+dist2)/2,2)}\t{round(dist1,2)} \t {round(dist2,2)}"
+                # )
+                # breakpoint()
                 # print(f"cam{cam_idx_1} -> cam{cam_idx_2} \t {point3d}")
+        # print(checked)
 
-        trianglated_points = np.array(trianglated_points)
+        triangulated_points_np = np.array(triangulated_points)
 
-        vec1 = torch.tensor(trianglated_points).unsqueeze(0)
-        vec2 = torch.tensor(trianglated_points).unsqueeze(1)
-        distances = torch.norm(vec1 - vec2, dim=2)
+        if prev_est is None:
+            ####################################################################################à
+            vec1 = torch.tensor(triangulated_points_np).unsqueeze(0)
+            vec2 = torch.tensor(triangulated_points_np).unsqueeze(1)
+            distances = torch.norm(vec1 - vec2, dim=2)
 
-        good_points = []
-        for i in range(distances.shape[0]):
-            for j in range(i, distances.shape[1]):
-                if distances[i][j] < 1000 and i != j:
-                    # print(f"{distances[i][j]} \t {trianglated_points[i]}")
-                    # print(f"{distances[i][j]}\t [{i} {j}]")
-                    if i not in good_points:
-                        good_points.append(i)
+            good_points = []
+            for i in range(distances.shape[0]):
+                for j in range(i, distances.shape[1]):
+                    if distances[i][j] < 1000 and i != j:
+                        if i not in good_points:
+                            good_points.append(i)
 
-        good_points = np.array([trianglated_points[i] for i in good_points])
+            good_points = np.array([triangulated_points_np[i] for i in good_points])
 
-        if len(good_points) == 0:
-            return None
+            if len(good_points) == 0:
 
-        final_point = np.mean(good_points, axis=0)
+                return None
+
+            final_point = np.mean(good_points, axis=0)
+            ####################################################################################
+        else:
+            dst = [np.linalg.norm(vec - prev_est) for vec in triangulated_points_np]
+            closest = np.array(dst).argmin()
+            final_point = triangulated_points_np[closest]
+            # breakpoint()
+        # print(triangulated_points_np.shape)
+        # dis, rix = np.unique(distances, return_inverse=True)
+
+        # mask1 = np.where((rix <= len(triangulated_points) // 2) & (rix != 0), 1, 0)
+        # mask2 = np.where(mask1.reshape(distances.shape) == 1)
+        # indexes = np.array(mask2).T
+        # breakpoint()
+
+        # threshold = 1.4
+        # mean = np.mean(triangulated_points_np, axis=0)
+        # std_dev = np.std(triangulated_points_np, axis=0)
+        # z_scores = (triangulated_points_np - mean) / std_dev
+        # mask = (np.abs(z_scores) < threshold).all(axis=1)
+        # filtered_points = triangulated_points_np[mask]
+        # # closest = np.array(
+        # #     np.where(
+        # #         np.where(
+        # #             (rix <= len(triangulated_points) // 2) & (rix != 0), 1, 0
+        # #         ).reshape(distances.shape)
+        # #         == 1
+        # #     )
+        # # ).T[0]
+
+        # avpoint = np.mean(filtered_points, axis=0)
+
+        # final_point = avpoint
         return final_point
