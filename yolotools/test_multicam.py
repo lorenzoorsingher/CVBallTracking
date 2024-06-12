@@ -1,18 +1,11 @@
-import os
 import sys
 
 sys.path.append(".")
 
-import json
-import numpy as np
 import cv2 as cv
-import shutil
-from camera_controller import CameraController
-from common import get_video_paths
-import random
-import time
-
 from ultralytics import YOLO
+
+from camera_controller import CameraController
 from yolotools.sliced_yolo import SlicedYOLO
 
 model_path = (

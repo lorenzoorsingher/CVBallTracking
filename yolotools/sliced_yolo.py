@@ -30,9 +30,6 @@ class SlicedYOLO:
     def get_windows(self, imsize):
         window_size = self.wsize
 
-        # print("window_size ", window_size)
-        # print("imsize ", imsize)
-
         ox_size = int(window_size[0] * self.overlap[0])
         oy_size = int(window_size[1] * self.overlap[1])
 
@@ -48,11 +45,11 @@ class SlicedYOLO:
                 x = i * (window_size[0] - ox_size) + xpad // 2
                 y = j * (window_size[1] - oy_size) + ypad // 2
                 origins.append((x, y))
+
+        # breakpoint()
         return origins
 
     def predict(self, frame, scale=1.0, viz=False):
-
-        cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
         if scale != 1.0:
             frame = cv.resize(
@@ -61,8 +58,6 @@ class SlicedYOLO:
 
         imsize = frame.shape[:2][::-1]
         origins = self.get_windows(imsize)
-
-        # wframe = self.print_windows(frame.copy(), origins)
 
         windows = []
         for origin in origins:
@@ -77,13 +72,20 @@ class SlicedYOLO:
             windows.append(window)
 
         detections = []
+
+        batch = []
+
+        # print(f"Inferencing on {len(windows)} windows")
+
         for win in windows:
-
             img = win["image"]
-            real_x, real_y, _, _ = win["coo"]
-            result = self.model.predict(img, verbose=False)
-            boxes = result[0].boxes.xywh.cpu().tolist()
+            batch.append(img)
 
+        results = self.model.predict(batch, verbose=False)
+
+        for win, result in zip(windows, results):
+            boxes = result.boxes.xywh.cpu().tolist()
+            real_x, real_y, _, _ = win["coo"]
             for idx, box in enumerate(boxes):
                 conf = result[0].boxes.conf.tolist()[idx]
                 x, y, w, h = map(int, box)
@@ -106,12 +108,14 @@ class SlicedYOLO:
         else:
 
             out = detections[torch.argmax(torch.tensor(detections).T[-1]).item()]
-            x, y, w, h, c = out
-            frame = cv.rectangle(
-                frame,
-                (x - w // 2, y - h // 2),
-                (x + w // 2, y + h // 2),
-                (0, 255, 0),
-                8,
-            )
+
+            if viz:
+                x, y, w, h, c = out
+                frame = cv.rectangle(
+                    frame,
+                    (x - w // 2, y - h // 2),
+                    (x + w // 2, y + h // 2),
+                    (0, 255, 0),
+                    8,
+                )
             return out, detections, frame
