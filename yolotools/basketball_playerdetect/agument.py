@@ -32,13 +32,9 @@ transform = A.Compose(
 )
 
 
-dataset_path = (
-    "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_1"
-)
+dataset_path = "yolotools/datasets/overfitter_1"
 
-target_ds = (
-    "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_aug"
-)
+target_ds = "yolotools/datasets/overfitter_aug"
 target_imgs = os.path.join(target_ds, "images")
 target_labels = os.path.join(target_ds, "labels")
 

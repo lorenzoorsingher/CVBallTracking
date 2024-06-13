@@ -59,7 +59,7 @@ if __name__ == "__main__":
     ################################
 
     cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
-    videos_path = "/home/lollo/Documents/python/CV/CVBallTracking/data/fake_basket"
+    videos_path = "data/fake_basket"
     video_paths = [f"{videos_path}/out{cam_idx}.mp4" for cam_idx in cam_idxs]
     cams = [CameraController(cam_idx) for cam_idx in cam_idxs]
     caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]

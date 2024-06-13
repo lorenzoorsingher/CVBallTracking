@@ -68,7 +68,7 @@ def get_args_agument():
         "--dataset",
         type=str,
         help="Dataset path",
-        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_1",
+        default="yolotools/datasets/overfitter_1",
         metavar="",
     )
 
@@ -77,7 +77,7 @@ def get_args_agument():
         "--target_dataset",
         type=str,
         help="Target dataset path",
-        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega",
+        default="yolotools/datasets/overfitter_mega",
         metavar="",
     )
 
@@ -105,7 +105,7 @@ def get_args_split():
         "--dataset",
         type=str,
         help="Dataset path",
-        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega",
+        default="yolotools/datasets/overfitter_mega",
         metavar="",
     )
 
@@ -114,7 +114,7 @@ def get_args_split():
         "--target_dataset",
         type=str,
         help="Target dataset path",
-        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega_split",
+        default="yolotools/datasets/overfitter_mega_split",
         metavar="",
     )
 
@@ -133,7 +133,7 @@ def get_args_checklabels():
         "--dataset",
         type=str,
         help="Dataset path",
-        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega",
+        default="yolotools/datasets/overfitter_mega",
         metavar="",
     )
 

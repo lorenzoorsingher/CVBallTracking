@@ -8,7 +8,7 @@ from ultralytics import YOLOv10
 model = YOLOv10.from_pretrained("jameslahm/yolov10s")
 
 # TRAINING
-yaml_path = "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_og_split/data.yaml"
+yaml_path = "yolotools/datasets/overfitter_og_split/data.yaml"
 
 
 if __name__ == "__main__":

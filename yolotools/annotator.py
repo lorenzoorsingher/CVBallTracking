@@ -35,10 +35,10 @@ def draw_circle(event, x, y, flags, param):
             end = (x, y)
 
 
-videos_path = "/home/lollo/Documents/python/CV/CVBallTracking/data/fake_basket"
+videos_path = "data/fake_basket"
 
 timestamp = time.strftime("%Y%m%d%H%M%S", time.localtime())
-dataset_path = f"/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/fakebasket_{timestamp}"
+dataset_path = f"yolotools/datasets/fakebasket_{timestamp}"
 
 
 imgs_path = f"{dataset_path}/images"
