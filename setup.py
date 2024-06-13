@@ -141,6 +141,51 @@ def get_args_checklabels():
     return args
 
 
+def get_args_demo():
+    parser = argparse.ArgumentParser(
+        prog="multi_track_demo.py",
+        description="""Multi camera tracking demo""",
+    )
+
+    parser.add_argument(
+        "-m",
+        "--mode",
+        type=int,
+        help="Performance mode [higher -> more precise & slower]",
+        default=2,
+        metavar="",
+    )
+
+    parser.add_argument(
+        "-s",
+        "--start",
+        type=int,
+        help="Starting frame",
+        default=750,
+        metavar="",
+    )
+
+    parser.add_argument(
+        "-e",
+        "--end",
+        type=int,
+        help="End frame",
+        default=1000,
+        metavar="",
+    )
+
+    parser.add_argument(
+        "-F",
+        "--from_file",
+        action="store_true",
+        default=False,
+        help="Use detections from file",
+    )
+
+    args = vars(parser.parse_args())
+    return args
+
+
 def get_args_pose():
     parser = argparse.ArgumentParser(
         prog="pose_estimation.py",

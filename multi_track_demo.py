@@ -14,20 +14,36 @@ from common import set_axes_equal
 
 from camera_controller import CameraController
 from yolotools.sliced_yolo import SlicedYOLO
+from setup import get_args_demo
 from build_map import from_file
 from kalman import KalmanTracker
 
 
-model_path = "weights/best.pt"
+args = get_args_demo()
 
-## FULL RESOLUTION
-# sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(3840, 2160), overlap=(0, 0))
-## MAX SPEED
-sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(1920, 1130), overlap=(0.1, 0.1))
-## BALANCED
-# sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(1300, 1130), overlap=(0.05, 0.1))
-## STANDARD
-# sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.1, 0.1))
+START = args["start"]
+END = args["end"]
+FROMFILE = args["from_file"]
+MODE = args["mode"]
+FRAME_SKIP = 10
+
+model_p = "weights/best.pt"
+
+if MODE == 1:
+    print("[SlicedYOLO] FULL RESOLUTION")
+    sliced_yolo = SlicedYOLO(model_path=model_p, wsize=(3840, 2160), overlap=(0, 0))
+elif MODE == 2:
+    print("[SlicedYOLO] MAX SPEED")
+    sliced_yolo = SlicedYOLO(model_path=model_p, wsize=(1920, 1130), overlap=(0.1, 0.1))
+elif MODE == 3:
+    print("[SlicedYOLO] BALANCED")
+    sliced_yolo = SlicedYOLO(
+        model_path=model_p, wsize=(1300, 1130), overlap=(0.05, 0.1)
+    )
+elif MODE == 4:
+    print("[SlicedYOLO] STANDARD")
+    sliced_yolo = SlicedYOLO(model_path=model_p, wsize=(640, 640), overlap=(0.1, 0.1))
+
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
 videos_path = "data/fake_basket"
@@ -39,15 +55,9 @@ caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
 
-FRAME_SKIP = 10
-START = 750
-END = 1000
-
-
 tracked_points = []
 every_det = []
 
-FROMFILE = False
 if not FROMFILE:
     if START > 0:
         for cap in caps:
