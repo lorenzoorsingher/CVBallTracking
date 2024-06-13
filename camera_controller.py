@@ -279,6 +279,14 @@ class CameraController:
         point3d = cv.convertPointsFromHomogeneous(point4d.T)[0][0]
         return point3d
 
+    def project_points(self, point3d):
+
+        points3d_np = np.array(point3d)
+        points2d, _ = cv.projectPoints(
+            points3d_np, self.rvecs, self.tvecs, self.mtx, self.dist
+        )
+        return points2d
+
     @staticmethod
     def detections_to_point(all_dets, cams, prev_est=None):
         if len(all_dets.keys()) < 2:

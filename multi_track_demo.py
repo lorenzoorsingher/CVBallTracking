@@ -54,7 +54,6 @@ caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
 
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
-
 tracked_points = []
 every_det = []
 
@@ -71,6 +70,7 @@ else:
 
 frame_idx = START
 final_point = None
+
 while True:
     print(f"FRAME {frame_idx}-------------------------------")
     all_frames = []
@@ -96,7 +96,7 @@ while True:
             if out is not None:
                 x, y, w, h, c = out
                 all_dets[curr_cam_idx] = [x + w // 2, y + h // 2]
-            all_frames.append(cv.resize(uframe, (640, 480)))
+            all_frames.append(cv.resize(uframe, (640, 360)))
             frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
     else:
         if len(steps) == 0:
@@ -110,6 +110,21 @@ while True:
         tracked_points.append(final_point)
 
     if not FROMFILE:
+        # if len(tracked_points) > 0:
+        #     for curr_cam_idx in range(len(cam_idxs)):
+        #         cam = cams[curr_cam_idx]
+        #         projections = cam.project_points(tracked_points)
+        #         prev = None
+        #         curr = None
+        #         for pp in projections[:, 0]:
+        #             # breakpoint()
+        #             point = pp // 6
+        #             curr = tuple(point.astype(np.int16))
+        #             if prev is None:
+        #                 prev = curr
+        #             cv.line(all_frames[curr_cam_idx], prev, curr, (255, 255, 0), 2)
+        #             prev = curr
+
         frame = np.vstack([np.hstack(all_frames[:4]), np.hstack(all_frames[4:])])
         if final_point is not None:
             cv.circle(frame, (50, 50), 30, (0, 255, 0), -1)
