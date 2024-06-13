@@ -43,7 +43,6 @@ every_det = []
 
 FROMFILE = True
 if not FROMFILE:
-    frame_idx = START
     if START > 0:
         for cap in caps:
             cap.set(cv.CAP_PROP_POS_FRAMES, START)
@@ -54,6 +53,7 @@ else:
             break
     steps = steps[idx : idx + (END - START)]
 
+frame_idx = START
 final_point = None
 while True:
     print(f"FRAME {frame_idx}-------------------------------")

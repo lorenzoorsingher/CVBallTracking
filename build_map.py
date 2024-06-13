@@ -18,7 +18,7 @@ from yolotools.sliced_yolo import SlicedYOLO
 
 def from_file():
     dump = []
-    with open("dett.txt", "r") as f:
+    with open("data/detections_demo.txt", "r") as f:
         lines = f.readlines()
         for line in lines:
             frame_idx, cam_idx, x, y = line.strip().split(";")

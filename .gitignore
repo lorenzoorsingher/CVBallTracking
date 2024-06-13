@@ -11,3 +11,4 @@ runs/
 yolotools/datasets/
 
 !weights/best.pt
+!data/detections_demo.txt
