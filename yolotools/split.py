@@ -34,6 +34,7 @@ else:
     os.makedirs(TARGET_PATH + "/test/labels")
 
 allfiles = os.listdir(DATASET_PATH + "/images")
+yaml_path = "yolotools/data.yaml"
 
 trainlen = (len(allfiles) / 100) * 85
 vallen = (len(allfiles) / 100) * 10
@@ -45,6 +46,8 @@ train = allfiles[: int(trainlen)]
 val = allfiles[int(trainlen) : int(trainlen + vallen)]
 test = allfiles[int(trainlen + vallen) :]
 
+
+shutil.copy(yaml_path, f"{TARGET_PATH}/data.yaml")
 
 for file in tqdm(train):
     shutil.copy(DATASET_PATH + "/images/" + file, TARGET_PATH + "/train/images")
