@@ -8,9 +8,8 @@ from ultralytics import YOLO
 from camera_controller import CameraController
 from yolotools.sliced_yolo import SlicedYOLO
 
-model_path = "runs/detect/train2/weights/best.pt"
+model_path = "weights/best.pt"
 model = YOLO(model_path)
-
 sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.05, 0.1))
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -22,7 +21,7 @@ caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
 curr_cam_idx = 4
-frame_skip = 10
+FRAME_SKIP = 10
 frame_idx = 1500
 while True:
 
@@ -58,8 +57,8 @@ while True:
         curr_cam_idx = (curr_cam_idx + 1) % (len(cam_idxs))
         print(f"SWITCHED TO CAMERA {cam_idxs[curr_cam_idx]}")
     if k == ord("d"):
-        print(f"SKIPPING {frame_skip} FRAMES")
-        frame_idx += frame_skip
+        print(f"SKIPPING {FRAME_SKIP} FRAMES")
+        frame_idx += FRAME_SKIP
     if k == ord("q"):
         print("EXITING")
         break

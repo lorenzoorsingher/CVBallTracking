@@ -17,40 +17,8 @@ from yolotools.sliced_yolo import SlicedYOLO
 from build_map import from_file
 from kalman import KalmanTracker
 
-positions_path = "data/camera_data/camera_positions.json"
-with open(positions_path, "r") as file:
 
-    data = json.load(file)
-    positions = data["positions"]
-    field_corners = np.array(data["field_corners"]) * 1000
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection="3d")
-# ax.set_box_aspect([1, 1, 1])
-# plt.ion()
-# plt.show()
-# ax.scatter(
-#     field_corners[:, 0],
-#     field_corners[:, 1],
-#     field_corners[:, 2],
-#     c="red",
-#     label="Real Corners",
-# )
-# set_axes_equal(ax)
-
-
-def plot_3d_points(points):
-
-    ax.scatter(
-        points[:, 0],
-        points[:, 1],
-        points[:, 2],
-        c="blue",
-        label="Real Corners",
-    )
-    plt.pause(1)
-
-
-model_path = "runs/detect/train2/weights/best.pt"
+model_path = "weights/best.pt"
 model = YOLO(model_path)
 
 sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.1, 0.1))
@@ -65,22 +33,27 @@ caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
 
-frame_skip = 10
+FRAME_SKIP = 10
 START = 750
 END = 1000
-frame_idx = START
-if START > 0:
-    for cap in caps:
-        cap.set(cv.CAP_PROP_POS_FRAMES, START)
 
 
 tracked_points = []
 every_det = []
 
-FROMFILE = False
-if FROMFILE:
+FROMFILE = True
+if not FROMFILE:
+    frame_idx = START
+    if START > 0:
+        for cap in caps:
+            cap.set(cv.CAP_PROP_POS_FRAMES, START)
+else:
     steps = from_file()
-    steps = steps[START:END]
+    for idx, step in enumerate(steps):
+        if step[0] >= START:
+            break
+    steps = steps[idx : idx + (END - START)]
+
 final_point = None
 while True:
     print(f"FRAME {frame_idx}-------------------------------")
@@ -95,7 +68,7 @@ while True:
 
             ret, frame = cap.read()
             if not ret:
-                print("[TRACK] Frame corrupted, exiting...")
+                print("[TRACK] Frame corrupt, exiting...")
                 exit()
 
             uframe = frame
@@ -125,20 +98,25 @@ while True:
         cv.imshow("frame", frame)
     k = cv.waitKey(1)
     if k == ord("d"):
-        print(f"SKIPPING {frame_skip} FRAMES")
-        cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx + frame_skip)
+        print(f"SKIPPING {FRAME_SKIP} FRAMES")
+        cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx + FRAME_SKIP)
     if k == ord("q"):
         print("EXITING")
         break
 
+
+###################### PLOTS #######################
 tracked_points_np = np.array(tracked_points)
-
 plot_points = np.array(tracked_points_np).T
-
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
 ax.set_box_aspect([1, 1, 1])
+positions_path = "data/camera_data/camera_positions.json"
+with open(positions_path, "r") as file:
 
+    data = json.load(file)
+    positions = data["positions"]
+    field_corners = np.array(data["field_corners"]) * 1000
 ax.scatter(
     field_corners[:, 0],
     field_corners[:, 1],
@@ -147,7 +125,7 @@ ax.scatter(
     label="Real Corners",
 )
 set_axes_equal(ax)
-
 ax.plot(plot_points[0], plot_points[1], plot_points[2], color="blue")
 ax.scatter(*plot_points.T[0], color="blue")
 plt.show()
+####################################################
