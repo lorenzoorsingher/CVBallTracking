@@ -327,5 +327,7 @@ class CameraController:
             dst = [np.linalg.norm(vec - prev_est) for vec in triangulated_points_np]
             closest = np.array(dst).argmin()
             final_point = triangulated_points_np[closest]
+            if dst[closest] > 1000:
+                final_point = None
 
         return final_point
