@@ -41,7 +41,7 @@ while True:
 
     uframe = cam.undistort_img(frame)
 
-    out, det = sliced_yolo.predict(uframe)
+    out, det, frame = sliced_yolo.predict(uframe, winz=True)
 
     if out is not None:
 
@@ -58,7 +58,7 @@ while True:
 
     if k == ord("n"):
         curr_cam_idx = (curr_cam_idx + 1) % (len(cam_idxs))
-        print(f"SWITCHED TO CAMERA{cam_idxs[curr_cam_idx]}")
+        print(f"SWITCHED TO CAMERA {cam_idxs[curr_cam_idx]}")
     if k == ord("d"):
         print(f"SKIPPING {frame_skip} FRAMES")
         frame_idx += frame_skip

@@ -94,6 +94,53 @@ def get_args_agument():
     return args
 
 
+def get_args_split():
+    parser = argparse.ArgumentParser(
+        prog="split.py",
+        description="""Splits dataset in train test val""",
+    )
+
+    parser.add_argument(
+        "-d",
+        "--dataset",
+        type=str,
+        help="Dataset path",
+        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega",
+        metavar="",
+    )
+
+    parser.add_argument(
+        "-t",
+        "--target_dataset",
+        type=str,
+        help="Target dataset path",
+        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega_split",
+        metavar="",
+    )
+
+    args = vars(parser.parse_args())
+    return args
+
+
+def get_args_checklabels():
+    parser = argparse.ArgumentParser(
+        prog="checklabels.py",
+        description="""Check YOLO labels""",
+    )
+
+    parser.add_argument(
+        "-d",
+        "--dataset",
+        type=str,
+        help="Dataset path",
+        default="/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega",
+        metavar="",
+    )
+
+    args = vars(parser.parse_args())
+    return args
+
+
 def get_args_pose():
     parser = argparse.ArgumentParser(
         prog="pose_estimation.py",

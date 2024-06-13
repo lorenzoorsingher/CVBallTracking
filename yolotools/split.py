@@ -1,15 +1,39 @@
-import os
 import sys
+
+sys.path.append(".")
+
+import os
 import shutil
 import random
 
-ogpath = (
-    "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega"
-)
-dest_path = "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega_split"
+from tqdm import tqdm
 
+from setup import get_args_split
 
-allfiles = os.listdir(ogpath + "/images")
+args = get_args_split()
+
+DATASET_PATH = args["dataset"]
+TARGET_PATH = args["target_dataset"]
+
+if not os.path.exists(DATASET_PATH):
+    print("Dataset not found")
+    exit()
+if os.path.exists(TARGET_PATH):
+    print("Target dataset already exists")
+    exit()
+else:
+    os.makedirs(TARGET_PATH)
+    os.makedirs(TARGET_PATH + "/train")
+    os.makedirs(TARGET_PATH + "/val")
+    os.makedirs(TARGET_PATH + "/test")
+    os.makedirs(TARGET_PATH + "/train/images")
+    os.makedirs(TARGET_PATH + "/train/labels")
+    os.makedirs(TARGET_PATH + "/val/images")
+    os.makedirs(TARGET_PATH + "/val/labels")
+    os.makedirs(TARGET_PATH + "/test/images")
+    os.makedirs(TARGET_PATH + "/test/labels")
+
+allfiles = os.listdir(DATASET_PATH + "/images")
 
 trainlen = (len(allfiles) / 100) * 85
 vallen = (len(allfiles) / 100) * 10
@@ -22,16 +46,20 @@ val = allfiles[int(trainlen) : int(trainlen + vallen)]
 test = allfiles[int(trainlen + vallen) :]
 
 
-for file in train:
-    shutil.copy(ogpath + "/images/" + file, dest_path + "/train/images")
-    shutil.copy(ogpath + "/labels/" + file[:-4] + ".txt", dest_path + "/train/labels")
+for file in tqdm(train):
+    shutil.copy(DATASET_PATH + "/images/" + file, TARGET_PATH + "/train/images")
+    shutil.copy(
+        DATASET_PATH + "/labels/" + file[:-4] + ".txt", TARGET_PATH + "/train/labels"
+    )
 
-for file in test:
-    shutil.copy(ogpath + "/images/" + file, dest_path + "/test/images")
-    shutil.copy(ogpath + "/labels/" + file[:-4] + ".txt", dest_path + "/test/labels")
+for file in tqdm(test):
+    shutil.copy(DATASET_PATH + "/images/" + file, TARGET_PATH + "/test/images")
+    shutil.copy(
+        DATASET_PATH + "/labels/" + file[:-4] + ".txt", TARGET_PATH + "/test/labels"
+    )
 
-for file in val:
-    shutil.copy(ogpath + "/images/" + file, dest_path + "/val/images")
-    shutil.copy(ogpath + "/labels/" + file[:-4] + ".txt", dest_path + "/val/labels")
-
-breakpoint()
+for file in tqdm(val):
+    shutil.copy(DATASET_PATH + "/images/" + file, TARGET_PATH + "/val/images")
+    shutil.copy(
+        DATASET_PATH + "/labels/" + file[:-4] + ".txt", TARGET_PATH + "/val/labels"
+    )

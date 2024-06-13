@@ -53,6 +53,19 @@ def main():
     imgs_path = os.path.join(folder, "images")
     labels_path = os.path.join(folder, "labels")
 
+    if not os.path.exists(DATASET_PATH):
+        print("Dataset not found")
+        exit()
+
+    if os.path.exists(TARGET_PATH):
+        print("Target dataset already exists")
+        exit()
+    else:
+        print("Creating target dataset")
+        os.mkdir(TARGET_PATH)
+        os.mkdir(target_imgs)
+        os.mkdir(target_labels)
+
     cv.namedWindow("img", cv.WINDOW_NORMAL)
 
     ball = 0

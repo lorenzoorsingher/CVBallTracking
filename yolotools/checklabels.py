@@ -1,16 +1,26 @@
+import sys
+
+sys.path.append(".")
+
 import os
 import cv2 as cv
 import numpy as np
 
+from setup import get_args_checklabels
 
-dataset_path = (
-    "/home/lollo/Documents/python/CV/CVBallTracking/yolotools/datasets/overfitter_mega"
-)
+args = get_args_checklabels()
 
-folder = os.path.join(dataset_path, "test")
-folder = dataset_path
+DATASET_PATH = args["dataset"]
+
+if not os.path.exists(DATASET_PATH):
+    print("Dataset not found")
+    exit()
+
+folder = os.path.join(DATASET_PATH, "test")
+folder = DATASET_PATH
 imgs_path = os.path.join(folder, "images")
 labels_path = os.path.join(folder, "labels")
+
 
 cv.namedWindow("img", cv.WINDOW_NORMAL)
 
@@ -38,4 +48,6 @@ for file in os.listdir(imgs_path):
         )
 
     cv.imshow("img", img)
-    cv.waitKey(0)
+    k = cv.waitKey(0)
+    if k == ord("q"):
+        break

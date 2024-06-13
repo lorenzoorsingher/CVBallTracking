@@ -49,7 +49,7 @@ class SlicedYOLO:
         # breakpoint()
         return origins
 
-    def predict(self, frame, scale=1.0, viz=False):
+    def predict(self, frame, scale=1.0, viz=False, winz=False):
 
         if scale != 1.0:
             frame = cv.resize(
@@ -102,6 +102,9 @@ class SlicedYOLO:
         # vec1 = torch.tensor(detections).T[:2].T.unsqueeze(0)
         # vec2 = torch.tensor(detections).T[:2].T.unsqueeze(1)
         # distances = torch.norm(vec1 - vec2, dim=2)
+
+        if winz:
+            frame = self.print_windows(frame)
 
         if len(detections) == 0:
             return None, None, frame
