@@ -10,7 +10,15 @@ from yolotools.sliced_yolo import SlicedYOLO
 
 model_path = "weights/best.pt"
 model = YOLO(model_path)
-sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.05, 0.1))
+
+## FULL RESOLUTION
+# sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(3840, 2160), overlap=(0, 0))
+## MAX SPEED
+# sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(1920, 1130), overlap=(0.1, 0.1))
+## BALANCED
+# sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(1300, 1130), overlap=(0.05, 0.1))
+## STANDARD
+sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.1, 0.1))
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
 videos_path = "data/fake_basket"
@@ -20,35 +28,32 @@ caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
 
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
-curr_cam_idx = 4
+curr_cam_idx = 0
 FRAME_SKIP = 10
-frame_idx = 1500
+START = 750
+for cap in caps:
+    cap.set(cv.CAP_PROP_POS_FRAMES, START)
+frame_idx = START
 while True:
 
     cap = caps[curr_cam_idx]
     cam = cams[curr_cam_idx]
 
-    cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx)
     ret, frame = cap.read()
+    frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
     if not ret:
-        frame_idx = 0
-        continue
-    else:
-        frame_idx += 1
+        print("[TRACK] Frame corrupt, exiting...")
+        exit()
 
-    uframe = cam.undistort_img(frame)
-
-    out, det, frame = sliced_yolo.predict(uframe, winz=True)
+    out, det, frame = sliced_yolo.predict(frame, winz=False)
 
     if out is not None:
-
         x, y, w, h, c = out
-
-        uframe = cv.rectangle(
-            uframe, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (0, 255, 0), 8
+        frame = cv.rectangle(
+            frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (0, 255, 0), 8
         )
 
-    # frame = sliced_yolo.print_windows(uframe)
+    # frame = sliced_yolo.print_windows(frame)
 
     cv.imshow("frame", frame)
     k = cv.waitKey(1)
@@ -56,9 +61,16 @@ while True:
     if k == ord("n"):
         curr_cam_idx = (curr_cam_idx + 1) % (len(cam_idxs))
         print(f"SWITCHED TO CAMERA {cam_idxs[curr_cam_idx]}")
+        cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx)
     if k == ord("d"):
         print(f"SKIPPING {FRAME_SKIP} FRAMES")
-        frame_idx += FRAME_SKIP
+        cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx + FRAME_SKIP)
+        frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
+    if k == ord("a"):
+        print(f"GOING BACK {FRAME_SKIP} FRAMES")
+        if frame_idx - FRAME_SKIP > 0:
+            cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx - FRAME_SKIP)
+            frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
     if k == ord("q"):
         print("EXITING")
         break

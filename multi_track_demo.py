@@ -19,9 +19,15 @@ from kalman import KalmanTracker
 
 
 model_path = "weights/best.pt"
-model = YOLO(model_path)
 
-sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.1, 0.1))
+## FULL RESOLUTION
+# sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(3840, 2160), overlap=(0, 0))
+## MAX SPEED
+sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(1920, 1130), overlap=(0.1, 0.1))
+## BALANCED
+# sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(1300, 1130), overlap=(0.05, 0.1))
+## STANDARD
+# sliced_yolo = SlicedYOLO(model_path=model_path, wsize=(640, 640), overlap=(0.1, 0.1))
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
 videos_path = "data/fake_basket"
@@ -41,7 +47,7 @@ END = 1000
 tracked_points = []
 every_det = []
 
-FROMFILE = True
+FROMFILE = False
 if not FROMFILE:
     if START > 0:
         for cap in caps:
@@ -71,6 +77,8 @@ while True:
                 print("[TRACK] Frame corrupt, exiting...")
                 exit()
 
+            # undistorion used to be here, for triangulation
+            # we need distorted images
             uframe = frame
 
             out, det, uframe = sliced_yolo.predict(uframe, viz=True)
@@ -88,13 +96,25 @@ while True:
 
     final_point = CameraController.detections_to_point(all_dets, cams, final_point)
 
-    if final_point is None:
-        continue
-
-    tracked_points.append(final_point)
+    if final_point is not None:
+        tracked_points.append(final_point)
 
     if not FROMFILE:
         frame = np.vstack([np.hstack(all_frames[:4]), np.hstack(all_frames[4:])])
+        if final_point is not None:
+            cv.circle(frame, (50, 50), 30, (0, 255, 0), -1)
+            cv.putText(
+                frame,
+                f"{len(all_dets)}",
+                (40, 60),
+                cv.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 0, 0),
+                2,
+                cv.LINE_AA,
+            )
+        else:
+            cv.circle(frame, (50, 50), 30, (0, 0, 255), -1)
         cv.imshow("frame", frame)
     k = cv.waitKey(1)
     if k == ord("d"):
