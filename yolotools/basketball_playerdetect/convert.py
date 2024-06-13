@@ -11,7 +11,7 @@ def visibile(point, frame):
     return True
 
 
-dataset_path = "/home/lollo/Documents/python/yolo/datasets/baskingball"
+dataset_path = "datasets/baskingball"
 
 json_path = os.path.join(dataset_path, "deepsport_dataset_dataset.json")
 
@@ -128,7 +128,7 @@ for lab in data:
                 2,
             )
 
-        dest_path = "/home/lollo/Documents/python/yolo/datasets/ayy"
+        dest_path = "datasets/ayy"
 
         imgs_path = os.path.join(dest_path, "images")
         labels_path = os.path.join(dest_path, "labels")
