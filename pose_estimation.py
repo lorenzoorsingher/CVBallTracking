@@ -52,6 +52,8 @@ def draw_field(img, cam_idx, curr_corner):
     # Rest of the code...
 
     return img
+
+
 def draw_field(img, cam_idx, curr_corner):
     offx = 600
     offy = 400
@@ -201,6 +203,8 @@ def get_real_points(cam_idx):
     """
     # Function code here
     pass
+
+
 def get_real_points(cam_idx):
 
     img_corners = []
@@ -232,10 +236,10 @@ def get_real_points(cam_idx):
 
         while True:
 
-            copy_frame = cv.circle(copy(frame), (x, y), 10, (0, 0, 255), -1)
+            copy_frame = cv.circle(copy(frame), (x, y), 4, (0, 0, 255), -1)
 
             for corner in img_corners:
-                cv.circle(copy_frame, corner, 15, (255, 0, 255), -1)
+                cv.circle(copy_frame, corner, 4, (255, 0, 255), -1)
 
             copy_frame = draw_field(copy_frame, cam_idx, curr_corner)
 
