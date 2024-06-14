@@ -26,6 +26,7 @@ END = args["end"]
 FROMFILE = args["from_file"]
 MODE = args["mode"]
 FRAME_SKIP = 10
+PRINTPATH = False
 
 model_p = "weights/best.pt"
 
@@ -110,20 +111,22 @@ while True:
         tracked_points.append(final_point)
 
     if not FROMFILE:
-        # if len(tracked_points) > 0:
-        #     for curr_cam_idx in range(len(cam_idxs)):
-        #         cam = cams[curr_cam_idx]
-        #         projections = cam.project_points(tracked_points)
-        #         prev = None
-        #         curr = None
-        #         for pp in projections[:, 0]:
-        #             # breakpoint()
-        #             point = pp // 6
-        #             curr = tuple(point.astype(np.int16))
-        #             if prev is None:
-        #                 prev = curr
-        #             cv.line(all_frames[curr_cam_idx], prev, curr, (255, 255, 0), 2)
-        #             prev = curr
+
+        if PRINTPATH:
+            if len(tracked_points) > 0:
+                for curr_cam_idx in range(len(cam_idxs)):
+                    cam = cams[curr_cam_idx]
+                    projections = cam.project_points(tracked_points)
+                    prev = None
+                    curr = None
+                    for pp in projections[:, 0]:
+                        # breakpoint()
+                        point = pp // 6
+                        curr = tuple(point.astype(np.int16))
+                        if prev is None:
+                            prev = curr
+                        cv.line(all_frames[curr_cam_idx], prev, curr, (255, 255, 0), 2)
+                        prev = curr
 
         frame = np.vstack([np.hstack(all_frames[:4]), np.hstack(all_frames[4:])])
         if final_point is not None:
