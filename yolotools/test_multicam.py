@@ -53,8 +53,6 @@ while True:
             frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (0, 255, 0), 8
         )
 
-    # frame = sliced_yolo.print_windows(frame)
-
     cv.imshow("frame", frame)
     k = cv.waitKey(1)
 

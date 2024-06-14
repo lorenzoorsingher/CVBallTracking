@@ -28,22 +28,20 @@ MODE = args["mode"]
 FRAME_SKIP = 10
 PRINTPATH = False
 
-model_p = "weights/best.pt"
+weight = "weights/best.pt"
 
 if MODE == 1:
     print("[SlicedYOLO] FULL RESOLUTION")
-    sliced_yolo = SlicedYOLO(model_path=model_p, wsize=(3840, 2160), overlap=(0, 0))
+    sliced_yolo = SlicedYOLO(model_path=weight, wsize=(3840, 2160), overlap=(0, 0))
 elif MODE == 2:
     print("[SlicedYOLO] MAX SPEED")
-    sliced_yolo = SlicedYOLO(model_path=model_p, wsize=(1920, 1130), overlap=(0.1, 0.1))
+    sliced_yolo = SlicedYOLO(model_path=weight, wsize=(1920, 1130), overlap=(0.1, 0.1))
 elif MODE == 3:
     print("[SlicedYOLO] BALANCED")
-    sliced_yolo = SlicedYOLO(
-        model_path=model_p, wsize=(1300, 1130), overlap=(0.05, 0.1)
-    )
+    sliced_yolo = SlicedYOLO(model_path=weight, wsize=(1300, 1130), overlap=(0.05, 0.1))
 elif MODE == 4:
     print("[SlicedYOLO] STANDARD")
-    sliced_yolo = SlicedYOLO(model_path=model_p, wsize=(640, 640), overlap=(0.1, 0.1))
+    sliced_yolo = SlicedYOLO(model_path=weight, wsize=(640, 640), overlap=(0.1, 0.1))
 
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8]
