@@ -3,6 +3,7 @@ import cv2 as cv
 from camera_controller import CameraController
 from matplotlib import pyplot as plt
 from copy import copy
+from random import randint
 
 from common import get_video_paths
 
@@ -57,7 +58,8 @@ def img_to_mouse(idx, x, y, div):
 
     return x_adj, y_adj
 
-#flags e param non li usiamo mai, servono?
+
+# flags e param non li usiamo mai, servono?
 def get_clicks(event, mouse_x, mouse_y, flags, param):
     """
     Callback function to handle mouse clicks.
@@ -97,13 +99,33 @@ loop = True
 
 divider = 4
 
+colors = [
+    (255, 0, 0),
+    (0, 255, 0),
+    (0, 128, 128),
+    (255, 255, 0),
+    (255, 0, 255),
+    (0, 255, 255),
+    (128, 0, 0),
+    (0, 128, 0),
+    (0, 0, 128),
+    (128, 128, 0),
+]
+print("##########################################")
+for idx, cam in enumerate(cams):
+    pos = cam.tvecs / 1000
+    print(
+        f"camera {cam_idxs[idx]} at position \t{pos[0].round(2)}m \t{pos[1].round(2)}m \t{pos[2].round(2)}m"
+    )
+print("##########################################")
 while loop:
 
     dist_frames = [cap.read()[1] for cap in caps]
 
     frames = []
     for idx, frame in enumerate(dist_frames):
-        frames.append(cv.undistort(frame, cams[idx].mtx, cams[idx].dist))
+        uframe = cv.undistort(frame, cams[idx].mtx, cams[idx].dist)
+        frames.append(uframe)
 
     frame = np.hstack([np.vstack(frames[:5]), np.vstack(frames[5:])])
     frame = cv.resize(frame, (1920, 2700))
@@ -113,7 +135,7 @@ while loop:
     Y = 0
     while True:
 
-        copy_frame = cv.circle(copy(frame), (x, y), 10, (0, 0, 255), -1)
+        copy_frame = cv.circle(copy(frame), (x, y), 3, (0, 255, 255), -1)
 
         k = cv.waitKey(10)
 
@@ -136,7 +158,7 @@ while loop:
                 uimp = imp
                 xp, yp = uimp[0]  # [0][0]
                 x_adj, y_adj = img_to_mouse(num, xp, yp, divider)
-                cv.circle(copy_frame, (x_adj, y_adj), 5, (0, 255, 0), -1)
+                cv.circle(copy_frame, (x_adj, y_adj), 5, colors[num], -1)
 
             point, _ = cv.projectPoints(
                 np.array([[X, Y, 0]], dtype=np.float32),
@@ -155,7 +177,7 @@ while loop:
                 continue
 
             x_adj, y_adj = img_to_mouse(num, xp, yp, divider)
-            cv.circle(copy_frame, (x_adj, y_adj), 10, (0, 255, 255), -1)
+            cv.circle(copy_frame, (x_adj, y_adj), 4, (0, 0, 255), -1)
 
         cam_idx = cam_idxs[idx]
         cur_cam = CameraController(cam_idx)
