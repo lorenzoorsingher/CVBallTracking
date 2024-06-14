@@ -94,6 +94,7 @@ while True:
 
             if out is not None:
                 x, y, w, h, c = out
+                #TODO: fix detection center 
                 all_dets[curr_cam_idx] = [x + w // 2, y + h // 2]
             all_frames.append(cv.resize(uframe, (640, 360)))
             frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
