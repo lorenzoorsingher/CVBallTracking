@@ -3,19 +3,13 @@ import numpy as np
 import json
 
 from camera_controller import CameraController
-from common import set_axes_equal
+from common import set_axes_equal, get_postions
 
 
 cam_idxs = [1, 2, 3, 4, 5, 6, 7, 8, 12, 13]
 
 
-positions_path = "data/camera_data/camera_positions.json"
-with open(positions_path, "r") as file:
-
-    data = json.load(file)
-    positions = data["positions"]
-    field_corners = np.array(data["field_corners"]) * 1000
-
+positions, field_corners, real_locations = get_postions()
 
 # Scale the axes equally
 fig = plt.figure()
@@ -36,9 +30,29 @@ for cam_idx in cam_idxs:
     cam = CameraController(cam_idx)
 
     rot, pos = cam.get_camera_position()
-    print(f"cam: {cam_idx} {pos}")
-    ax.scatter(pos[0][0], pos[1][0], pos[2][0], c="red", label="tvecs")
-    ax.text(pos[0][0], pos[1][0], pos[2][0], str(cam_idx))
+
+    real_pos = real_locations[str(cam_idx)]
+
+    x = pos[0][0]
+    y = pos[1][0]
+    z = pos[2][0]
+
+    r_x = real_pos[0]
+    r_y = real_pos[1]
+    r_z = real_pos[2]
+
+    err_x = round(abs(r_x - x)) / 10
+    err_y = round(abs(r_y - y)) / 10
+    err_z = round(abs(r_z - z)) / 10
+
+    ax.scatter(x, y, z, c="red", label="tvecs")
+    ax.text(x, y, z, str(cam_idx))
+
+    print(f"{cam_idx} -------------------------------------------------------")
+    print(f"est pos:  \t{round(x)} \t{round(y)} \t{round(z)}")
+    print(f"real pos: \t{r_x} \t{r_y} \t{r_z}")
+    print(f"error:    \t{err_x}cm \t{err_y}cm \t{err_z}cm")
+
 
 ax.set_xlabel("X")
 ax.set_ylabel("Y")

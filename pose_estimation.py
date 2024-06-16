@@ -7,8 +7,7 @@ import json
 import os
 
 from setup import get_args_pose
-from common import set_axes_equal
-from common import get_video_paths
+from common import set_axes_equal, get_postions, get_video_paths
 
 args = get_args_pose()
 if args["camera"] == -1:
@@ -22,36 +21,9 @@ x = -1
 y = -1
 
 
-positions_path = "data/camera_data/camera_positions.json"
-with open(positions_path, "r") as file:
+positions, field_corners, _ = get_postions()
 
-    data = json.load(file)
-    positions = data["positions"]
-    field_corners = data["field_corners"]
-
-
-def draw_field(img, cam_idx, curr_corner):
-    """
-    Draws the field lines, camera position, and intersection points on the image.
-
-    Args:
-        img (numpy.ndarray): The input image.
-        cam_idx (int): The index of the camera.
-        curr_corner (int): The index of the current corner.
-
-    Returns:
-        numpy.ndarray: The image with the field lines, camera position, and intersection points drawn.
-    """
-    offx = 600
-    offy = 400
-    multiplier = 25
-    field_corners2 = [
-        [int(x * multiplier), int(y * -multiplier), z] for x, y, z in field_corners
-    ]
-
-    # Rest of the code...
-
-    return img
+field_corners = field_corners // 1000
 
 
 def draw_field(img, cam_idx, curr_corner):

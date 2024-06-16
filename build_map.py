@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 from ultralytics import YOLO
 
 from sort import *
-from common import set_axes_equal
+from common import set_axes_equal, get_postions
 
 from camera_controller import CameraController
 from yolotools.sliced_yolo import SlicedYOLO
@@ -48,12 +48,9 @@ def from_file():
 
 
 if __name__ == "__main__":
-    positions_path = "data/camera_data/camera_positions.json"
-    with open(positions_path, "r") as file:
 
-        data = json.load(file)
-        positions = data["positions"]
-        field_corners = np.array(data["field_corners"]) * 1000
+    positions, field_corners, _ = get_postions()
+
     # Scale the axes equally
 
     ################################

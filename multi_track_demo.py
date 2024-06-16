@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 from ultralytics import YOLO
 
 from sort import *
-from common import set_axes_equal
+from common import set_axes_equal, get_postions
 
 from camera_controller import CameraController
 from yolotools.sliced_yolo import SlicedYOLO
@@ -94,7 +94,7 @@ while True:
 
             if out is not None:
                 x, y, w, h, c = out
-                #TODO: fix detection center 
+                # TODO: fix detection center
                 all_dets[curr_cam_idx] = [x + w // 2, y + h // 2]
             all_frames.append(cv.resize(uframe, (640, 360)))
             frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
@@ -158,12 +158,9 @@ plot_points = np.array(tracked_points_np).T
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
 ax.set_box_aspect([1, 1, 1])
-positions_path = "data/camera_data/camera_positions.json"
-with open(positions_path, "r") as file:
 
-    data = json.load(file)
-    positions = data["positions"]
-    field_corners = np.array(data["field_corners"]) * 1000
+positions, field_corners, _ = get_postions()
+
 ax.scatter(
     field_corners[:, 0],
     field_corners[:, 1],

@@ -19,6 +19,17 @@ def get_video_paths():
     return video_paths
 
 
+def get_postions():
+    positions_path = "data/camera_data/camera_positions.json"
+    with open(positions_path, "r") as file:
+
+        data = json.load(file)
+        positions = data["positions"]
+        field_corners = np.array(data["field_corners"]) * 1000
+        real_locations = data["real_locations"]
+    return positions, field_corners, real_locations
+
+
 def set_axes_equal(ax):
     """
     Make axes of 3D plot have equal scale so that spheres appear as spheres,
