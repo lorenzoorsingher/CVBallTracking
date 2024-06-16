@@ -4,12 +4,13 @@ sys.path.append(".")
 
 import torch
 import cv2 as cv
+import numpy as np
 import json
 
 from matplotlib import pyplot as plt
 from ultralytics import YOLO
 
-from sort import *
+from sort import Sort
 from common import set_axes_equal, get_postions
 
 from camera_controller import CameraController
@@ -49,7 +50,7 @@ videos_path = "data/fake_basket"
 video_paths = [f"{videos_path}/out{cam_idx}.mp4" for cam_idx in cam_idxs]
 cams = [CameraController(cam_idx) for cam_idx in cam_idxs]
 caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
-
+trackers = [Sort() for _ in range(len(cam_idxs))]
 
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
@@ -95,7 +96,8 @@ while True:
             if out is not None:
                 x, y, w, h, c = out
                 # TODO: fix detection center
-                all_dets[curr_cam_idx] = [x + w // 2, y + h // 2]
+                all_dets[curr_cam_idx] = [x, y]
+                # trackers[curr_cam_idx].update([x + w // 2, y + h // 2])
             all_frames.append(cv.resize(uframe, (640, 360)))
             frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
     else:
