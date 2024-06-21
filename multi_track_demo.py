@@ -50,7 +50,7 @@ videos_path = "data/fake_basket"
 video_paths = [f"{videos_path}/out{cam_idx}.mp4" for cam_idx in cam_idxs]
 cams = [CameraController(cam_idx) for cam_idx in cam_idxs]
 caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
-trackers = [Sort() for _ in range(len(cam_idxs))]
+trackers = [Sort(max_age=10) for _ in range(len(cam_idxs))]
 
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
@@ -97,7 +97,26 @@ while True:
                 x, y, w, h, c = out
                 # TODO: fix detection center
                 all_dets[curr_cam_idx] = [x, y]
-                # trackers[curr_cam_idx].update([x + w // 2, y + h // 2])
+
+                x1 = x - w // 2
+                y1 = y - h // 2
+                x2 = x + w // 2
+                y2 = y + h // 2
+                detection = np.array([[x1, y1, x2, y2, c]])
+                track_out = trackers[curr_cam_idx].update(detection)
+                track_out = track_out[0]
+                track_x = (track_out[0] + track_out[2]) // 2
+                track_y = (track_out[1] + track_out[3]) // 2
+            else:
+                track_out = trackers[curr_cam_idx].update()
+
+            if curr_cam_idx == 0:
+                print(f"{curr_cam_idx}----------------")
+                # print(out)
+                print(track_out)
+
+                print(f"TRACKED POINT: \t{track_x}, {track_y}")
+                print(f"DETECTION POINT: \t{x}, {y}")
             all_frames.append(cv.resize(uframe, (640, 360)))
             frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
     else:
