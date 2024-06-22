@@ -18,7 +18,7 @@ from yolotools.sliced_yolo import SlicedYOLO
 from setup import get_args_demo
 from build_map import from_file
 from kalman import KalmanTracker
-
+from tracker import Tracker
 
 args = get_args_demo()
 
@@ -50,7 +50,7 @@ videos_path = "data/fake_basket"
 video_paths = [f"{videos_path}/out{cam_idx}.mp4" for cam_idx in cam_idxs]
 cams = [CameraController(cam_idx) for cam_idx in cam_idxs]
 caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
-trackers = [Sort(max_age=10) for _ in range(len(cam_idxs))]
+trackers = [Tracker(idx) for idx in cam_idxs]
 
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
@@ -70,6 +70,12 @@ else:
 
 frame_idx = START
 final_point = None
+
+
+detecs = {}
+
+for idx in cam_idxs:
+    detecs[idx] = []
 
 while True:
     print(f"FRAME {frame_idx}-------------------------------")
@@ -93,30 +99,15 @@ while True:
 
             out, det, uframe = sliced_yolo.predict(uframe, viz=True)
 
+            track_x = -1
+            track_y = -1
             if out is not None:
                 x, y, w, h, c = out
                 # TODO: fix detection center
                 all_dets[curr_cam_idx] = [x, y]
 
-                x1 = x - w // 2
-                y1 = y - h // 2
-                x2 = x + w // 2
-                y2 = y + h // 2
-                detection = np.array([[x1, y1, x2, y2, c]])
-                track_out = trackers[curr_cam_idx].update(detection)
-                track_out = track_out[0]
-                track_x = (track_out[0] + track_out[2]) // 2
-                track_y = (track_out[1] + track_out[3]) // 2
-            else:
-                track_out = trackers[curr_cam_idx].update()
+                detecs[cam_idxs[curr_cam_idx]].append([x, y, w, h])
 
-            if curr_cam_idx == 0:
-                print(f"{curr_cam_idx}----------------")
-                # print(out)
-                print(track_out)
-
-                print(f"TRACKED POINT: \t{track_x}, {track_y}")
-                print(f"DETECTION POINT: \t{x}, {y}")
             all_frames.append(cv.resize(uframe, (640, 360)))
             frame_idx = cap.get(cv.CAP_PROP_POS_FRAMES)
     else:
@@ -124,6 +115,18 @@ while True:
             break
         step = steps.pop(0)
         frame_idx, all_dets = step
+
+    filt_dets = {}
+    for idx, tracker in enumerate(trackers):
+
+        if cam_idxs[idx] not in all_dets:
+            point = tracker.update(None)
+        else:
+            point = tracker.update(all_dets[cam_idxs[idx]])
+        if point is not None:
+            filt_dets[cam_idxs[idx]] = point
+
+    all_dets = filt_dets
 
     final_point = CameraController.detections_to_point(all_dets, cams, final_point)
 
@@ -164,15 +167,23 @@ while True:
         else:
             cv.circle(frame, (50, 50), 30, (0, 0, 255), -1)
         cv.imshow("frame", frame)
+
     k = cv.waitKey(1)
     if k == ord("d"):
         print(f"SKIPPING {FRAME_SKIP} FRAMES")
-        cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx + FRAME_SKIP)
+
+        for cap in caps:
+            cap.set(cv.CAP_PROP_POS_FRAMES, frame_idx + FRAME_SKIP)
     if k == ord("q"):
         print("EXITING")
         break
 
 
+with open("detcs.txt", "w") as f:
+
+    for idx in cam_idxs:
+        for det in detecs[idx]:
+            f.write(f"{idx} {' '.join([str(x) for x in det])}\n")
 ###################### PLOTS #######################
 tracked_points_np = np.array(tracked_points)
 plot_points = np.array(tracked_points_np).T
