@@ -27,35 +27,50 @@ The goal of the project is to build a system that can track a ball in a 3D space
 
 CVBallTracking
 ├── data
-│   ├── camera_data
-│   │   ├── cam_1
-│   │   │   ├── calib
-│   │   │   │   ├── camera_calib.json
-│   │   │   │   └── img_points.json
-│   │   │   ├── dump
-│   │   │   │   ├── dump_20240408_125237.json
-│   │   │   │   └── ...
-│   │   │   └── metadata.json
-│   │   ├── ...
-│   │   ├── camera_positions.json
-│   │   └── chess_sizes.json
-│   ├── video
-│   │   ├── out1F.mp4
-│   │   └── ...
-│   └── data.placeholder
-├── imgs
-│   └── ...
+│   ├── camera_data
+│   │   ├── cam_1
+│   │   │   ├── calib
+│   │   │   │   ├── camera_calib.json
+│   │   │   │   └── img_points.json
+│   │   │   ├── dump
+│   │   │   │   ├── dump_20240408_125237.json
+│   │   │   │   └── ...
+│   │   │   └── metadata.json
+│   │   ├── cam_2
+│   │   │   └── ...
+│   │   ├── camera_positions.json
+│   │   └── chess_sizes.json
+│   └── video
+│       ├── out1F.mp4
+│       └── ...
+├── weights
+│   └── best.pt
+├── yolotools
+│   ├── datasets
+│   │   └── ...
+│   ├── agument_diy.py
+│   ├── annotator.py
+│   ├── checklabels.py
+│   ├── data.yaml
+│   ├── sliced_yolo.py
+│   ├── split.py
+│   ├── test_multicam.py
+│   ├── train.ipynb
+│   └── train.py
 ├── 3dplot.py
+├── build_map.py
 ├── calibrate_cameras.py
+├── calib_test.py
 ├── camera_controller.py
 ├── common.py
 ├── corners_detection.py
+├── kalman.py
 ├── multiple_views.py
+├── multi_track_demo.py
 ├── pose_estimation.py
 ├── README.md
-├── requirements.txt
 ├── setup.py
-└── utils.py
+└── sort.py
 
 ```
 
