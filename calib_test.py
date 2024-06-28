@@ -19,14 +19,14 @@ def draw_corners(frame, corners, reprojected):
 
 def reprojection_error(corners, board, mtx, dist, frame):
     """
-    Compute the reprojecton error of the current calibration parameters.
+    Compute the reprojection error of the current calibration parameters.
     First a corner detection is run on the image and the coordinates are saved
     in 'corners', later a projection of where the chessboard corners are supposed
     to be (according to extrinsic and intrinsic params) is run and the results
     are compared point by point. The resulting difference is calculated with
     root mean square deviation.
     Reliability describes how many corners have been detected and thus on how
-    many data points over the maximum aviable have been used to calculate
+    many data points over the maximum available have been used to calculate
     the error, it ranges from 0.0 to 1.0 where 1.0 means all corners have been
     detected
     """
