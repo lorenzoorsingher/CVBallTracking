@@ -31,30 +31,43 @@ Additionally, it outlines potential avenues for further applications and future 
 \begin{document}
 
 \chapter{Calibration}\label{ch:in}
-Insert images and snippets for the calibration steps\\
-Our project at the Sambapolis sports facility in Trento involves a multi-camera system designed to capture and analyze ball trajectories. In sports analytics, precise camera calibration is essential for accurate tracking and 3D reconstruction. The primary steps in our calibration process include capturing multiple frames of a checkerboard, identifying reference points such as corners or line intersections, computing the intrinsic and extrinsic camera parameters, and then refining and validating the calibration results.
-A notable advancement in our process is the improved detection of the checkerboard pattern, which is crucial for achieving precise camera alignment. This chapter delves into our calibration methodology, with particular emphasis on the enhancements.
+Our project at the Sambapolis sports facility in Trento involves a multi-camera system designed to capture and analyze ball trajectories. 
+The primary steps in our calibration process include capturing multiple frames of a checkerboard, identifying reference points such as corners or line intersections of the field, computing the intrinsic and extrinsic camera parameters, and then refining and validating the calibration results.
+A notable advancement in our process is the improved detection process of the checkerboard pattern, this chapter delves into our calibration methodology, with particular emphasis on these enhancements.
 
 \section{Camera Calibration Overview}
-Our camera calibration system is designed to streamline the calibration of multiple cameras through a user-friendly command-line interface. This tool allows users to select the cameras to be calibrated and define reference points efficiently, providing real-time visual feedback and 3D plotting. This interactive approach simplified the calibration process, reduced manual intervention, and enhanced the overall accuracy. 
-The calibration process involves several key steps, users initiate the calibration process by selecting the cameras from a predefined list. This selection can be executed directly from the command line, allowing for a swift setup and enabling the calibration of specific cameras based on the project requirements. After camera selection, users are prompted to identify and mark reference points. These points serve as a basis for calibration and are crucial for ensuring the accuracy of the system. The tool provides options for manual input or the use of pre-existing calibration data, enhancing flexibility and reusability of calibration results.
-The core of the calibration process consists of the computation of intrinsic and extrinsic parameters of the cameras based on the reference points. Obtaining these parameters we can move on to validate the accuracy by comparing the computed camera parameters against known geometric relationships or previously established calibration data. 
+\textbf{Insert images and snippets for the calibration steps}\\
+Our camera calibration system is designed to streamline the calibration of multiple cameras through a user-friendly command-line interface. 
+This tool allows users to select the cameras to be calibrated and define reference points efficiently, providing real-time visual feedback and 3D plotting. 
+The calibration process involves several key steps, users initiate the calibration process by selecting the cameras from a predefined list. 
+This selection can be executed directly from the command line, allowing for a swift setup and enabling the calibration of specific cameras based on the project requirements. 
+After camera selection, users are prompted to identify and mark reference points. 
+These points serve as a basis for calibration and are crucial for ensuring the accuracy of the system. 
+The tool provides options for manual input or the use of pre-existing calibration data, enhancing flexibility and reusability of calibration results.
+The core of the calibration process consists of the computation of intrinsic and extrinsic parameters of the cameras based on the reference points. 
+Obtaining these parameters we can move on to validate the accuracy by comparing the computed camera parameters against known geometric relationships or previously established calibration data. 
 
 \section{Improvements}
 
-As in the basic project, we decided to use checkerboards in our calibration method. However, we insert some improvements such as a distance check and a system to fasten the pattern detection process.
+As in the previous project, we decided to use checkerboards in our calibration method. 
+However, we insert some improvements such as a distance check and a system to fasten the pattern detection process.
 
 \subsection{Distance Validation}
-To ensure the quality of the detected corners, the check distance function evaluates the proximity of a given point to a list of midpoints. This is particularly useful for filtering out redundant or erroneous detections. 
-The function computes the Euclidean distance between the given point and each midpoint in the list. Then, keep the point only if it is within a specified threshold distance from any midpoint.
+To ensure the quality and uniqueness of detected checkerboard patterns, the check distance function evaluates the distance of the current checkerboard's central point from all previously detected central points. 
+The function calculates the Euclidean distance between the newly detected point and each previously recorded point, then, the new point is considered valid only if the distance is above a predefined threshold.
 
 \subsection{Fast Pattern Detection}
-The fast detection function enhances the efficiency of detecting chessboard patterns in images for camera calibration. It begins by resizing the image to a lower resolution, which speeds up the detection process while maintaining the pattern’s visibility. It then identifies the chessboard pattern in the resized image using the function get corners. Following this initial detection, the function performs a proximity check to ensure that the midpoint of the detected pattern is not too close to previously detected patterns. If the detected pattern is sufficiently distinct from prior detections, the function refines the detection by calling get corners again on the original, high-resolution image to obtain more precise corner coordinates. This method balances speed and accuracy, optimizing the calibration process.
+The fast detection function begins by resizing the image to a lower resolution, which speeds up the detection process while maintaining the pattern’s visibility. 
+It then identifies the checkerboard pattern in the resized image using the function get corners and check the distance using the check distance function.
+If the detected pattern is sufficiently distinct from prior detections, the function refines the detection by calling get corners again on the original, high-resolution image to obtain more precise corner coordinates. 
 
 \section{Visualization and Interaction}
-As users interact with the system, during identification of the reference points, the visualizations update in real time. Indeed we provide a little and minimal representation of the field with the key points highlighted, the current point is identified with a color, and as you proceed with identification the points already saved are also changed in color. This dynamic feedback loop ensures that users can immediately see the impact of their actions, leading to more precise and accurate calibration results.
-Upon successful calibration, the system generates a comprehensive visualization of the field and the cameras' positions. The system produces a 3D plot that represents the field and the calibrated positions of the cameras. This plot provides a spatial overview, showing how each camera is oriented and positioned relative to the field.
-Users can interactively explore the field through the synchronized views from all cameras. When a user selects a point in any camera view or on the 3D plot, the corresponding point is highlighted across all other camera views and on the 3D plot. 
+As users interact with the system, during identification of the reference points, the visualizations update in real time. 
+Indeed, we provide a little and minimal representation of the field with the key points highlighted, the current point is identified with a color, and as you proceed with identification the points already saved are also changed in color. 
+This dynamic feedback loop ensures that users can immediately see the impact of their actions, leading to more precise and accurate calibration results.
+Upon successful calibration, the system generates a comprehensive visualization of the field and the cameras' positions. The system produces a 3D plot that represents the field and the calibrated positions of the cameras. 
+This plot provides a spatial overview, showing how each camera is oriented and positioned relative to the field.
+Moreover, users can interactively explore the field through the synchronized views from all cameras. When a user selects a point in any camera view or on the 3D plot, the corresponding point is highlighted across all other camera views and on the 3D plot. 
 
 \chapter{Ball Tracking Overview}
 
