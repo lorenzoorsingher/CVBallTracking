@@ -9,7 +9,6 @@ import json
 from matplotlib import pyplot as plt
 from ultralytics import YOLO
 
-from sort import *
 from common import set_axes_equal, get_postions
 
 from camera_controller import CameraController
