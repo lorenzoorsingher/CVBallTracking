@@ -118,89 +118,87 @@ for idx, cam in enumerate(cams):
         f"camera {cam_idxs[idx]} at position \t{pos[0].round(2)}m \t{pos[1].round(2)}m \t{pos[2].round(2)}m"
     )
 print("##########################################")
-while loop:
 
-    dist_frames = [cap.read()[1] for cap in caps]
 
-    frames = []
-    for idx, frame in enumerate(dist_frames):
-        uframe = cv.undistort(frame, cams[idx].mtx, cams[idx].dist)
-        frames.append(uframe)
+dist_frames = [cap.read()[1] for cap in caps]
 
-    frame = np.hstack([np.vstack(frames[:5]), np.vstack(frames[5:])])
-    frame = cv.resize(frame, (1920, 2700))
+frames = []
+for idx, frame in enumerate(dist_frames):
+    uframe = cv.undistort(frame, cams[idx].mtx, cams[idx].dist)
+    frames.append(uframe)
 
-    print("frame shape", frame.shape)
-    X = 0
-    Y = 0
-    while True:
+frame = np.hstack([np.vstack(frames[:5]), np.vstack(frames[5:])])
+frame = cv.resize(frame, (1920, 2700))
 
-        copy_frame = cv.circle(copy(frame), (x, y), 3, (0, 255, 255), -1)
+print("frame shape", frame.shape)
+X = 0
+Y = 0
+while True:
 
-        k = cv.waitKey(10)
+    copy_frame = cv.circle(copy(frame), (x, y), 3, (0, 255, 255), -1)
 
-        if k == ord("q"):
-            loop = False
-            break
-        if k == ord("c"):
-            break
-        idx, cam_x, cam_y = mouse_to_img(x, y, divider)
+    k = cv.waitKey(10)
 
-        for num, camid in enumerate(cam_idxs):
-            cam_tmp = CameraController(camid)
+    if k == ord("q"):
+        loop = False
+        break
+    if k == ord("c"):
+        break
+    idx, cam_x, cam_y = mouse_to_img(x, y, divider)
 
-            dmp = np.array(cam_tmp.get_img_corners()[0]) * 1000
-            imgp, _ = cv.projectPoints(
-                dmp, cam_tmp.rvecs, cam_tmp.tvecs, cam_tmp.mtx, None
-            )
+    for num, camid in enumerate(cam_idxs):
+        cam_tmp = CameraController(camid)
 
-            for imp in imgp:
-                uimp = imp
-                xp, yp = uimp[0]  # [0][0]
-                x_adj, y_adj = img_to_mouse(num, xp, yp, divider)
-                cv.circle(copy_frame, (x_adj, y_adj), 5, colors[num], -1)
+        dmp = np.array(cam_tmp.get_img_corners()[0]) * 1000
+        imgp, _ = cv.projectPoints(dmp, cam_tmp.rvecs, cam_tmp.tvecs, cam_tmp.mtx, None)
 
-            point, _ = cv.projectPoints(
-                np.array([[X, Y, 0]], dtype=np.float32),
-                cam_tmp.rvecs,
-                cam_tmp.tvecs,
-                cam_tmp.mtx,
-                None,
-            )
-            xr, yr = point[0][0]
-
-            xp, yp = xr, yr
-
-            if xp < 0 or yp < 0:
-                continue
-            if xp > 3840 or yp > 2160:
-                continue
-
+        for imp in imgp:
+            uimp = imp
+            xp, yp = uimp[0]  # [0][0]
             x_adj, y_adj = img_to_mouse(num, xp, yp, divider)
-            cv.circle(copy_frame, (x_adj, y_adj), 4, (0, 0, 255), -1)
+            cv.circle(copy_frame, (x_adj, y_adj), 5, colors[num], -1)
 
-        cam_idx = cam_idxs[idx]
-        cur_cam = CameraController(cam_idx)
-        print(f"on camera {cam_idx}")
-        rotm, _ = cv.Rodrigues(cur_cam.rvecs)
-        tvec = np.array([x[0] for x in cur_cam.tvecs])
+        point, _ = cv.projectPoints(
+            np.array([[X, Y, 0]], dtype=np.float32),
+            cam_tmp.rvecs,
+            cam_tmp.tvecs,
+            cam_tmp.mtx,
+            None,
+        )
+        xr, yr = point[0][0]
 
-        fx = cur_cam.mtx[0][0]
-        fy = cur_cam.mtx[1][1]
-        cx = cur_cam.mtx[0][2]
-        cy = cur_cam.mtx[1][2]
+        xp, yp = xr, yr
 
-        unx, uny = cam_x, cam_y
-        ux = (unx - cx) / fx
-        vx = (uny - cy) / fy
+        if xp < 0 or yp < 0:
+            continue
+        if xp > 3840 or yp > 2160:
+            continue
 
-        Tx, Ty, Tz = rotm.T @ -tvec
-        dv = rotm.T @ np.array([ux, vx, 1])
-        dx, dy, dz = dv
+        x_adj, y_adj = img_to_mouse(num, xp, yp, divider)
+        cv.circle(copy_frame, (x_adj, y_adj), 4, (0, 0, 255), -1)
 
-        X = (-Tz / dz) * dx + Tx
-        Y = (-Tz / dz) * dy + Ty
+    cam_idx = cam_idxs[idx]
+    cur_cam = CameraController(cam_idx)
+    print(f"on camera {cam_idx}")
+    rotm, _ = cv.Rodrigues(cur_cam.rvecs)
+    tvec = np.array([x[0] for x in cur_cam.tvecs])
 
-        print(f"selected point at {round(X/1000,2)}m t {round(Y/1000,2)}m ")
+    fx = cur_cam.mtx[0][0]
+    fy = cur_cam.mtx[1][1]
+    cx = cur_cam.mtx[0][2]
+    cy = cur_cam.mtx[1][2]
 
-        cv.imshow("frames", copy_frame)
+    unx, uny = cam_x, cam_y
+    ux = (unx - cx) / fx
+    vx = (uny - cy) / fy
+
+    Tx, Ty, Tz = rotm.T @ -tvec
+    dv = rotm.T @ np.array([ux, vx, 1])
+    dx, dy, dz = dv
+
+    X = (-Tz / dz) * dx + Tx
+    Y = (-Tz / dz) * dy + Ty
+
+    print(f"selected point at {round(X/1000,2)}m t {round(Y/1000,2)}m ")
+
+    cv.imshow("frames", copy_frame)
