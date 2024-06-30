@@ -48,7 +48,6 @@ The core of the calibration process consists of the computation of intrinsic and
 Obtaining these parameters we can move on to validate the accuracy by comparing the computed camera parameters against known geometric relationships or previously established calibration data. 
 
 \section{Improvements}
-
 As in the previous project, we decided to use checkerboards in our calibration method. 
 However, we insert some improvements such as a distance check and a system to fasten the pattern detection process.
 
@@ -70,43 +69,36 @@ This plot provides a spatial overview, showing how each camera is oriented and p
 Moreover, users can interactively explore the field through the synchronized views from all cameras. When a user selects a point in any camera view or on the 3D plot, the corresponding point is highlighted across all other camera views and on the 3D plot. 
 
 \chapter{Ball Tracking Overview}
+\textbf{Mi manca la parte di ricostruzione 3D}\\
+In our Python-based project, we have developed scripts for efficient video processing and data augmentation, including a user interface for camera control, frame skipping, and playback. 
+This chapter details our detection and tracking approach, utilizing YOLO for object detection, SlicedYOLO for high-resolution video processing, and scripts for data augmentation and annotation verification.
 
-In our Python-based project on object detection and tracking, we have implemented several scripts to facilitate efficient video processing and data augmentation tasks, not to mention the interface that allows user to switch cameras, skip frames, or control playback.
-This chapter outlines our approach, incorporating YOLO for detection, SlicedYOLO for handling high-resolution videos, and scripts for data augmentation and annotation verification.
+\section{Methodology}
+To achieve robust object detection, we decide to utilize YOLO (You Only Look Once).
 
-\section{YOLO for Object Detection}
-To achieve robust object detection, we decide to utilize YOLO (You Only Look
-Once).
+We start by loading a pretrained-by-us YOLO model, then, we employ a customized \texttt{SlicedYOLO} approach to manage high-resolution videos efficiently. 
+This method divides video frames into overlapping slices, ensuring comprehensive coverage of the image for detection and optimizing computational efficiency, providing complete coverage of frames.
 
-We start by loading a pretrained-by-us YOLO model, specifically designed for robust object detection tasks. This model is the backbone of our detection system.
-
-We employ a customized \texttt{SlicedYOLO} approach to manage high-resolution videos efficiently. This method divides video frames into overlapping slices, ensuring comprehensive coverage of the image for detection and optimizing computational efficiency.
-
-\subsubsection{Methodology}
-The script operates in a loop, sequentially processing frames captured by multiple cameras. It reads frames from each camera feed, applies the \texttt{SlicedYOLO} model for object detection, and highlights detected objects within each frame. 
-
-The \texttt{SlicedYOLO} approach handles high-resolution video frames by dividing them into manageable slices. This segmentation ensures comprehensive coverage and efficient computation for detection.
-
-Frames are divided into slices and processed sequentially. This allows the system to detect objects in each slice efficiently, providing complete coverage of the high-resolution frames.
-
-Using \texttt{SlicedYOLO} improves the system's ability to manage high-resolution video data, optimizing both detection accuracy and computational performance.
+The script operates in a loop, sequentially processing frames captured by multiple cameras. 
+It reads frames from each camera feed, applies the \texttt{SlicedYOLO} model for object detection, and highlights detected objects within each frame. 
 
 \section{Data Augmentation}
+Data augmentation is critical for enriching our dataset and improving model robustness. 
+Introducing variability through augmentation enhances the quality and diversity of training data.
 
-Data augmentation is critical for enriching our dataset and improving model robustness. Introducing variability through augmentation enhances the quality and diversity of training data.
+We apply transformations such as random cropping, horizontal flipping, and adjustments to brightness and contrast to improve the robustness of machine learning models trained on the data.
 
-We utilize the Albumentations library to apply transformations such as random cropping, horizontal flipping, and adjustments to brightness and contrast. These transformations improve the robustness of machine learning models trained on the data.
+The script reads images and their corresponding bounding box labels in YOLO format. 
+It applies the specified transformations and saves the augmented images and labels to a target dataset.
 
-The script reads images and their corresponding bounding box labels in YOLO format. It applies the specified transformations and saves the augmented images and labels to a target dataset.
-
-Visual validation ensures the quality of augmented data. Transformed images with overlaid bounding boxes are displayed for inspection, allowing us to verify the effectiveness of the transformations.
+Visual validation ensures the quality of augmented data, indeed, transformed images with overlaid bounding boxes are displayed for inspection, allowing us to verify the effectiveness of the transformations.
 
 \section{Annotation Quality Assurance}
 
-The \texttt{checklabels.py} script is designed for visualizing bounding box annotations on images within a dataset. It serves as a tool for verifying the accuracy of these annotations.
+The \texttt{checklabels.py} script is designed for visualizing bounding box annotations on images within a dataset. 
+It serves as a tool for verifying the accuracy of these annotations.
 
 The script provides a user-friendly interface for navigating through annotated images and inspecting bounding boxes.
-
 Users can confirm the correctness of the annotations, ensuring reliable input data for subsequent machine learning tasks.
 
 \chapter{Results and Conclusion}
