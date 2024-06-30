@@ -44,7 +44,10 @@ for cam_idx in cam_idxs:
     err_x = round(abs(r_x - x)) / 10
     err_y = round(abs(r_y - y)) / 10
     err_z = round(abs(r_z - z)) / 10
+    dist = np.sqrt(err_x**2 + err_y**2 + err_z**2)
+    perc = dist / np.sqrt(r_x**2 + r_y**2 + r_z**2) * 1000
 
+    ax.scatter(r_x, r_y, r_z, c="pink", label="tvecs")
     ax.scatter(x, y, z, c="red", label="tvecs")
     ax.text(x, y, z, str(cam_idx))
 
@@ -52,7 +55,7 @@ for cam_idx in cam_idxs:
     print(f"est pos:  \t{round(x)} \t{round(y)} \t{round(z)}")
     print(f"real pos: \t{r_x} \t{r_y} \t{r_z}")
     print(f"error:    \t{err_x}cm \t{err_y}cm \t{err_z}cm")
-
+    print(f"distance: \t{round(dist,2)}cm\t {round(perc,2)}%")
 
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
