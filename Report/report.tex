@@ -107,26 +107,27 @@ Do we have some numeric comparison between our method and the previous one? Cos√
 % Togli la cit solo dopo averne messa un'altra altrimenti latex si arrabbia.
 \cite{gulawani2006cfd}
 
-\section{Summary of Achievements}
-This report has outlined the development and implementation of a multi-camera 3D ball tracking system aimed at enhancing sports analytics. Our project, conducted at the Sambapolis sports facility in Trento, leverages advancements in camera calibration, object detection, and data augmentation to provide a robust and user-friendly solution for tracking ball trajectories across multiple video feeds.
+This report has outlined the development and implementation of a multi-camera 3D ball tracking system aimed at enhancing sports analytics. 
+Our project, conducted at the Sambapolis sports facility in Trento, leverages advancements in camera calibration, object detection, and data augmentation to provide a robust and user-friendly solution for tracking ball trajectories across multiple video feeds.
 
-We began by rebuilding the camera calibration process to improve precision and reliability. This new methodology incorporates refined techniques for camera alignment and calibration frame selection, ensuring superior performance and enabling accurate spatial data capture. 
-The 3D plots and synchronized views provide a comprehensive understanding of the field, aiding in the identification and correction of camera placement issues. With its interactive command-line interface, users can easily manage calibrations, whether reusing existing ones or creating new setups, enhancing overall efficiency and flexibility.
+We began by rebuilding the camera calibration process to improve precision and reliability. 
+This new methodology incorporates refined techniques for camera alignment and calibration frame selection, ensuring superior performance and enabling accurate spatial data capture. 
+The 3D plots and synchronized views provide a comprehensive understanding of the field, aiding in the identification and correction of camera placement issues. 
+With its interactive command-line interface, users can easily manage calibrations, whether reusing existing ones or creating new setups, enhancing overall efficiency and flexibility.
 
 In object detection, we utilized the YOLO model and introduced the \texttt{SlicedYOLO} approach that divides frames into overlapping slices, optimizing the detection process and ensuring comprehensive coverage. 
 
-To enhance the dataset and model robustness, we implemented a data augmentation script that applies various transformations to enrich the training data. Visual validation steps further ensure the quality of the augmented data.
+To enhance the dataset and model robustness, we implemented a data augmentation script that applies various transformations to enrich the training data. 
+Visual validation steps further ensure the quality of the augmented data.
 
-We even provide a user-friendly interface for verifying bounding box annotations, enhancing the accuracy and reliability of the dataset. This tool allows users to navigate through annotated images, inspect bounding boxes, and confirm their correctness.
-
-\section{Implications and Applications}
-The advancements presented in this report offer a comprehensive solution for tracking ball dynamics and player interactions in sports settings. The high-precision 3D ball tracking system provides valuable insights into game play, aiding in performance analysis, training methodologies, and tactical evaluations. The integration of multiple camera feeds and the ability to handle high-resolution videos make the system suitable for various sports and scenarios, enhancing its versatility and applicability.
+We even provide a user-friendly interface for verifying bounding box annotations, enhancing the accuracy and reliability of the dataset. 
+This tool allows users to navigate through annotated images, inspect bounding boxes, and confirm their correctness.
+\\
+The advancements presented in this report offer a comprehensive solution for tracking ball dynamics and player interactions in sports settings. 
+The high-precision 3D ball tracking system provides valuable insights into game play, aiding in performance analysis, training methodologies, and tactical evaluations. 
+The integration of multiple camera feeds and the ability to handle high-resolution videos make the system suitable for various sports and scenarios, enhancing its versatility and applicability.
 
 \section{Future Developments}
 Non so cosa scrivere sinceramnete, o meglio si ma non sarebbe carino dire che in futuro non bisognerebbe allenare il modello coi dati di test...
-
-\section{Conclusion}
-In conclusion, our multi-camera 3D ball tracking system represents a significant advancement in sports analytics, combining precise camera calibration, efficient object detection, and comprehensive data augmentation. The system's user-friendly design and high accuracy offer valuable capabilities for analyzing and improving sports performance. With potential for real-time applications and further integration with advanced technologies, the system is well-positioned to support the evolving needs of sports analytics and contribute to enhanced player and game analysis.
-
 
 \end{document}
