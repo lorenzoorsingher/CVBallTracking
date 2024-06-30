@@ -96,7 +96,15 @@
 
 \renewcommand{\bibname}{\raggedright References}
 
-\titleformat{\chapter}[display]{\bfseries\centering}{\huge \chaptertitlename\ \thechapter}{1em}{\Huge #1}
+\titleformat{\chapter}[display]
+  {\bfseries\centering}
+  {}
+  {0pt}
+  {\Huge #1}
+  [\vspace{-0.2em}]
+
+\titlespacing*{\chapter}{0pt}{-80pt}{20pt}
+
 \renewcommand{\contentsname}{\raggedright Table of Contents}
 \renewcommand{\listfigurename}{\raggedright List of Figures}
 \renewcommand{\listtablename}{\raggedright List of Tables}
