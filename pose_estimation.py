@@ -23,7 +23,7 @@ y = -1
 
 positions, field_corners, _ = get_postions()
 
-field_corners = field_corners // 1000
+field_corners = (field_corners // 1000).tolist()
 
 
 def draw_field(img, cam_idx, curr_corner):
@@ -194,11 +194,16 @@ def get_real_points(cam_idx):
     cv.namedWindow("frame", cv.WINDOW_NORMAL)
     cv.setMouseCallback("frame", get_clicks)
 
+    msg = """\nFollow the instructions on the map in the top left corner: 
+the green dot represents you point of view, cycle through the points and, 
+when visible, click on the intersection of the lines.\n"""
+    print(msg)
     print("Press 'a' to Add a point")
     print("Press 's' to Skip a point")
     print("Press 'r' to Remove the last point")
     print("Press 'c' to Continue with the video")
     print("Press 'q' to Quit or continue")
+
     loop = True
     while loop:
         ret, frame = cap.read()
@@ -212,6 +217,7 @@ def get_real_points(cam_idx):
 
             for corner in img_corners:
                 cv.circle(copy_frame, corner, 4, (255, 0, 255), -1)
+                cv.addText(copy_frame, str(corner), corner, "Arial", 20, (0, 0, 0))
 
             copy_frame = draw_field(copy_frame, cam_idx, curr_corner)
 
@@ -223,22 +229,24 @@ def get_real_points(cam_idx):
                 img_corners.append((x, y))
                 real_corners.append(field_corners[curr_corner])
                 curr_corner += 1
+                print(f"Added point {curr_corner} at {x}, {y}")
             if k == ord("s"):
-                curr_corner += 1
-
+                curr_corner = (curr_corner + 1) % len(field_corners)
             if k == ord("q"):
                 loop = False
                 break
             if k == ord("r"):
                 img_corners.pop()
                 real_corners.pop()
+                curr_corner -= 1
+                print(f"Removed last point")
             if k == ord("c"):
                 break
 
-            print("---------------------")
-            print(curr_corner)
-            print(real_corners)
-            print(img_corners)
+            # print("---------------------")
+            # print(curr_corner)
+            # print(real_corners)
+            # print(img_corners)
 
     return real_corners, img_corners
 
