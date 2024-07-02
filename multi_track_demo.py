@@ -10,14 +10,12 @@ import json
 from matplotlib import pyplot as plt
 from ultralytics import YOLO
 
-from sort import Sort
 from common import set_axes_equal, get_postions
 
 from camera_controller import CameraController
 from yolotools.sliced_yolo import SlicedYOLO
 from setup import get_args_demo
-from build_map import from_file
-from kalman import KalmanTracker
+from tools.build_map import from_file
 from tracker import Tracker
 
 args = get_args_demo()
