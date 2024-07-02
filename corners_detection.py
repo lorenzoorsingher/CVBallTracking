@@ -62,12 +62,29 @@ def check_distance(point, midpoints, threshold):
     return False
 
 
+def check_border(chk_corners, small_shape):
+
+    min_x = chk_corners[:, 0, 0].min()
+    max_x = chk_corners[:, 0, 0].max()
+    min_y = chk_corners[:, 0, 1].min()
+    max_y = chk_corners[:, 0, 1].max()
+
+    THR = 30
+    if min_x < THR or min_y < THR:
+        return True
+
+    if max_x > small_shape[0] - THR or max_y > small_shape[1] - THR:
+        return True
+
+    return False
+
+
 def fast_detection(frame, chessboard_size, mid_points, canvas):
     # look for chessboard in lower resolution
     FAC = 4
     small_shape = (frame.shape[1] // FAC, frame.shape[0] // FAC)
     chk_frame = cv.resize(frame, small_shape)
-    chk_ret, _, midpoint = get_corners(chk_frame, chessboard_size)
+    chk_ret, chk_corners, midpoint = get_corners(chk_frame, chessboard_size)
 
     got_corners = False
     tooclose = True
@@ -75,8 +92,9 @@ def fast_detection(frame, chessboard_size, mid_points, canvas):
     if chk_ret:
         midpoint = midpoint * FAC
         # check whether the point is too close to another one
-        tooclose = check_distance(midpoint, mid_points, DISTANCE_THRESHOLD * 2)
-
+        tooclose1 = check_distance(midpoint, mid_points, DISTANCE_THRESHOLD * 2)
+        tooclose2 = check_border(chk_corners, small_shape)
+        tooclose = tooclose1 or tooclose2
         if not tooclose:
             got_corners, corners_refined, _ = get_corners(frame, chessboard_size)
 
