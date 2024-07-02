@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append(".")
+
 import os
 import cv2 as cv
 import numpy as np
@@ -69,7 +73,10 @@ def reprojection_error(corners, board, mtx, dist, frame):
 
     l2 = np.linalg.norm(corners - reprojected)
 
-    reprojection = draw_corners(frame, corners, reprojected)
+    if frame is not None:
+        reprojection = draw_corners(frame, corners, reprojected)
+    else:
+        reprojection = None
 
     return target, reprojection, l2
 
@@ -77,7 +84,7 @@ def reprojection_error(corners, board, mtx, dist, frame):
 video_paths = get_video_paths()
 targets = []
 old_targets = []
-for camera_idx in [1, 2, 6]:
+for camera_idx in [1, 2, 3, 4, 5, 6, 7, 8, 12]:
 
     cam = CameraController(camera_idx)
     chessboard_size = cam.chessboard_size
@@ -103,39 +110,21 @@ for camera_idx in [1, 2, 6]:
     errors = []
     old_errors = []
 
-    for _ in range(TEST_LEN):
+    dump = cam.get_dump()
+    board = cam.get_chessboard()
+
+    for set in dump:
         found = False
         corners_refined = None
-        while not found:
-            idx = choice(idxs)
-            idxs.remove(idx)
 
-            cap.set(cv.CAP_PROP_POS_FRAMES, idx)
-            ret, frame = cap.read()
-
-            gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-            found, corners = cv.findChessboardCorners(
-                gray,
-                chessboard_size,
-                cv.CALIB_CB_ADAPTIVE_THRESH
-                + cv.CALIB_CB_FAST_CHECK
-                + cv.CALIB_CB_NORMALIZE_IMAGE,
-            )
-            if found == True:
-
-                criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-                corners_refined = cv.cornerSubPix(
-                    gray, corners, (11, 11), (-1, -1), criteria
-                )
-
-        board = cam.get_chessboard()
-        target, rep, l2 = reprojection_error(corners, board, cam.mtx, cam.dist, frame)
+        target, rep, l2 = reprojection_error(set, board, cam.mtx, cam.dist, None)
         old_target, rep, old_l2 = reprojection_error(
-            corners, board, old_mtx, old_dist, frame
+            set, board, old_mtx, old_dist, None
         )
 
         errors.append(l2)
         old_errors.append(old_l2)
+
     targets.append(target)
     old_targets.append(old_target)
     # print("l2: ", l2)
