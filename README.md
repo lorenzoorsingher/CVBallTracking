@@ -208,13 +208,74 @@ You can check if the dataset was correctly created by running the `checklabels.p
 
 Finally you can train the model by running the `train.py` script. The script will load the dataset and start the training process.
 
+### Test Detection
 
-## TODO 
+You can test your model by running the `test_multicam.py` script. The script will load the model weights (don't forget to put them in the `weights` folder or to set `model_path`) and run the detection on the video. 
 
-- comparative testing sys
-- class-ify calibration scripts
-- clean up code
-- report
+<img src="imgs/detecting.png" width=80%>
+
+```
+Press 'n' to switch camera
+Press 'd' to skip 10 frames
+Press 'a' to go back 10 frames
+Press 'q' to exit
+```
+
+Detection uses the **SlicedYOLO** system, by default the windowing is $640 \times 640$ pixels with 10% overlap on both axis, you can try different configurations by uncommenting the lines at the beginning of the script.
+
+
+<div style="display:flex;">
+  <img src="imgs/windowed.png" style="width:50%;">
+  <img src="imgs/windowed2.png" style="width:50%;">
+</div>
+
+Two examples of sliced inference, many smaller windows are more precise but also slower.
+
+## Tracking
+
+The tracking demo can be run by executing the `multi_track_demo.py` script. The script will load the calibration parameters and the model weights and start the tracking process.
+
+<img src="imgs/multi_tracking.png" width=100%>
+
+The dot in the top left corner represents how many cameras are detecting the ball, if it's green it means the system is tracking the ball, if it's red it means it's not. To track the ball the system needs at least 2 cameras detecting the ball for no less than 3 consecutive frames (to avoid false positives).
+
+```
+usage: multi_track_demo.py [-h] [-m] [-s] [-e] [-F]
+
+Multi camera tracking demo
+
+options:
+  -h  show this help message and exit
+  -m  Performance mode [higher -> more precise & slower]
+  -s  Starting frame
+  -e  End frame
+  -F  Use detections from file
+```
+Even though the possibility to use single window detection is given (**-m 1**) it's NOT recommended. The tracker is designed to be run at native resolution $640 \times 640$ (**-m 4**) for the best results and constant lock. Modes **2** and **3** are also available, they are a compromise between speed and precision, feel  free to experiment with different resolutions.
+
+By pressing 'q' you can exit the program and the tracking will stop. A window will be shown with the 3D plot of the ball trajectory.
+
+<img src="imgs/multi_track3d.png" width=100%>
+
+## Additional Tools
+
+### Split View
+
+The `split_view.py` script allows you to visualize the cameras in the corrispettive positions. The tool will show two cameras at a time and you can cycle between them by pressing 'a' and 'd'. The diagram in the top left shows which cameras are currently shown.
+You can click anywhere on the screen to see where that point falls on the court in the other camera views.
+
+<img src="imgs/splt_view.png" width=100%>
+
+
+```
+press 'a' to cycle through the cameras on the top quadrant (green)
+press 'd' to cycle through the cameras on the bottom quadrant (purple)
+press 'q' to exit
+```
+
+### more
+
+In the `tools` are present some more tools for visualization and testing.
 
 
 
