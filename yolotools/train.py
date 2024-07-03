@@ -1,11 +1,7 @@
 from ultralytics import YOLO
-import torch
-import os
-
-from ultralytics import YOLOv10
 
 # Load the YOLOv8 model
-model = YOLOv10.from_pretrained("jameslahm/yolov10s")
+model = YOLO("yolov8n.pt")
 
 # TRAINING
 yaml_path = "yolotools/datasets/overfitter_og_split/data.yaml"
