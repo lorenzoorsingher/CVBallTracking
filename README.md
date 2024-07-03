@@ -240,11 +240,11 @@ Detection uses the **SlicedYOLO** system, by default the windowing is $640 \time
 
 
 <div style="display:flex;">
-  <img src="imgs/windowed.png" style="width:50%;">
-  <img src="imgs/windowed2.png" style="width:50%;">
+  <img src="imgs/windowed.png" style="width:45%;">
+  <img src="imgs/windowed2.png" style="width:45%;">
 </div>
 
-Two examples of sliced inference, many smaller windows are more precise but also slower.
+*Two examples of sliced inference, many smaller windows are more precise but also slower.*
 
 ## Tracking
 
