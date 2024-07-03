@@ -28,6 +28,11 @@ caps = [cv.VideoCapture(video_paths[idx]) for idx in range(len(video_paths))]
 
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 
+print("Press 'n' to switch camera")
+print("Press 'd' to skip 10 frames")
+print("Press 'a' to go back 10 frames")
+print("Press 'q' to exit")
+
 curr_cam_idx = 0
 FRAME_SKIP = 10
 START = 750
@@ -45,7 +50,7 @@ while True:
         print("[TRACK] Frame corrupt, exiting...")
         exit()
 
-    out, det, frame = sliced_yolo.predict(frame, winz=False)
+    out, det, frame = sliced_yolo.predict(frame, winz=True)
 
     if out is not None:
         x, y, w, h, c = out
