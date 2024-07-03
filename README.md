@@ -4,18 +4,13 @@
 Project for Computer Vision, UniTN
 
 <div style="text-align:center;">
-<img src="imgs/3dplot.png" width=60%>
-
+<img src="imgs/multi_track3d.png" width=100%>
 </div>
 
 ## About
 The goal of the project is to build a system that can track a ball in a 3D space using multiple cameras. Our objective is to develop a tool able to make the setup of the cameras easy, fast and precise, and to provide a simple and intuitive interface to the user. 
 
-<br>
-<div style="text-align:center;">
-<img src="imgs/calibration.png" width=60%>
-</div>
-<br>
+
 
 ## General Information
 
@@ -24,53 +19,62 @@ The goal of the project is to build a system that can track a ball in a 3D space
 ### Project Structure
 
 ```
-
 CVBallTracking
 ├── data
-│   ├── camera_data
-│   │   ├── cam_1
-│   │   │   ├── calib
-│   │   │   │   ├── camera_calib.json
-│   │   │   │   └── img_points.json
-│   │   │   ├── dump
-│   │   │   │   ├── dump_20240408_125237.json
-│   │   │   │   └── ...
-│   │   │   └── metadata.json
-│   │   ├── cam_2
-│   │   │   └── ...
-│   │   ├── camera_positions.json
-│   │   └── chess_sizes.json
-│   └── video
-│       ├── out1F.mp4
-│       └── ...
+│   ├── camera_data
+│   │   ├── cam_1
+│   │   │   ├── calib
+│   │   │   │   ├── camera_calib.json
+│   │   │   │   └── img_points.json
+│   │   │   ├── dump
+│   │   │   │   ├── dump_20240408_125237.json
+│   │   │   │   └── ...
+│   │   │   └── metadata.json
+│   │   ├── cam_2
+│   │   │   └── ...
+│   │   ├── camera_positions.json
+│   │   └── chess_sizes.json
+│   ├── fake_basket
+│   │   ├── out1.mp4
+│   │   ├── ...
+│   │   └── fake_basket.placeholder
+│   ├── video
+│   │   ├── out1F.mp4
+│   │   ├── ...
+│   │   └── video.placeholder
+│   └── data.placeholder
+├── imgs
+├── tools
+│   ├── 3dplot.py
+│   ├── build_map.py
+│   ├── calib_test.py
+│   ├── getvals.py
+│   └── multiple_views.py
 ├── weights
-│   └── best.pt
+│   └── best.pt
 ├── yolotools
-│   ├── datasets
-│   │   └── ...
-│   ├── agument_diy.py
-│   ├── annotator.py
-│   ├── checklabels.py
-│   ├── data.yaml
-│   ├── sliced_yolo.py
-│   ├── split.py
-│   ├── test_multicam.py
-│   ├── train.ipynb
-│   └── train.py
-├── 3dplot.py
-├── build_map.py
+│   ├── basketball_playerdetect
+│   │   ├── agument.py
+│   │   └── convert.py
+│   ├── agument_diy.py
+│   ├── annotator.py
+│   ├── checklabels.py
+│   ├── data.yaml
+│   ├── sliced_yolo.py
+│   ├── split.py
+│   ├── test_multicam.py
+│   ├── train.ipynb
+│   └── train.py
 ├── calibrate_cameras.py
-├── calib_test.py
 ├── camera_controller.py
 ├── common.py
 ├── corners_detection.py
-├── kalman.py
-├── multiple_views.py
 ├── multi_track_demo.py
 ├── pose_estimation.py
 ├── README.md
 ├── setup.py
-└── sort.py
+├── split_view.py
+└── tracker.py
 
 ```
 
@@ -79,6 +83,15 @@ CVBallTracking
 
 The project is divided into two main parts: the calibration and the tracking. Each step is indipedent from the other, so you can run them separately, however in order to execute the tracking you need to have calibration and pose estimation done.
 
+## Installation
+
+To correclty run the project you need to install the required libraries. You can do this by running
+
+```
+pip install -r requirements.txt
+```
+
+You will need to place the calibration videos in the `data/video` folder and the basketball video in the `data/fake_basket` folder, all with the original filenames. 
 
 ## Calibration
 
@@ -156,6 +169,8 @@ If you want to reuse the screen points selected in a previous run you can use th
 ## Detection
 
 In the folder `yolotools` you can find the scripts to create the dataset, train the model and test it. The dataset is composed of images and labels, the labels are in the YOLO format. The final system uses a YOLOv8n model.
+
+If you are not interested in training a new YOLO model you can skip this step and use the weights provided in the `weights` folder.
 
 ### Annotation
 
