@@ -10,6 +10,7 @@
 runs/
 yolotools/datasets/
 
+!imgs/*
 !weights/best.pt
 !data/detections_demo.txt
 !data/camera_data/*
