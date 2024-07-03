@@ -3,8 +3,8 @@ import argparse
 
 def get_args_corners():
     parser = argparse.ArgumentParser(
-        prog="main.py",
-        description="""Run camera calibration""",
+        prog="corners_detection.py",
+        description="""Runs corner detection""",
     )
 
     parser.add_argument(
@@ -29,7 +29,7 @@ def get_args_corners():
         "-dt",
         "--distance-threshold",
         type=int,
-        help="Minimum number of detections to stop the process [100]",
+        help="Distance threshold between detections [100]",
         default=100,
         metavar="",
     )
@@ -40,7 +40,7 @@ def get_args_corners():
 
 def get_args_calib():
     parser = argparse.ArgumentParser(
-        prog="main.py",
+        prog="calibrate_cameras.py",
         description="""Run camera calibration""",
     )
 
