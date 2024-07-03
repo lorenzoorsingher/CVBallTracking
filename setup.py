@@ -152,7 +152,7 @@ def get_args_demo():
         "--mode",
         type=int,
         help="Performance mode [higher -> more precise & slower]",
-        default=2,
+        default=3,
         metavar="",
     )
 
