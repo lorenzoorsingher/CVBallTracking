@@ -61,6 +61,15 @@ cv.namedWindow("frames", cv.WINDOW_NORMAL)
 cv.setMouseCallback("frames", draw_circle)
 
 
+print("press 's' to skip 1 frame")
+print("press 'd' to skip 10 frames")
+print("press 'a' to go back 10 frames")
+print("press 'r' to jump to random frame")
+print("press 'f' to save annotation")
+print("press 'n' to switch to next camera")
+print("press 'q' to exit")
+
+
 curr_cam_idx = 0
 frame_skip = 10
 while True:
@@ -121,6 +130,7 @@ while True:
         print(str_ann)
     if k == ord("s"):
         print("SKIPPING FRAME")
+        cap.set(cv.CAP_PROP_POS_FRAMES, cap.get(cv.CAP_PROP_POS_FRAMES) + 1)
     if k == ord("d"):
         print(f"SKIPPING {frame_skip} FRAMES")
         cap.set(cv.CAP_PROP_POS_FRAMES, cap.get(cv.CAP_PROP_POS_FRAMES) + frame_skip)
