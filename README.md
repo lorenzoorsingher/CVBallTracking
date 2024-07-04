@@ -63,7 +63,6 @@ CVBallTracking
 │   ├── sliced_yolo.py
 │   ├── split.py
 │   ├── test_multicam.py
-│   ├── train.ipynb
 │   └── train.py
 ├── calibrate_cameras.py
 ├── camera_controller.py
@@ -101,7 +100,11 @@ Camera calibration is composed of 3 steps to be executed in order:
 - **Pose estimation** uses the calibration parameters to estimate the pose of the cameras and save them in a json file
 
 ### Corners detection
+```
+python corners_detection.py -cs 4 -nd 200
 
+# runs the detection on camera 4 with a cap of 200 detections
+```
 To detect the corners of the chessboard in the images you need to run the `corners_detection.py` script. 
 
 
@@ -124,6 +127,12 @@ The program will run the corner detection for each camera and save the results i
 
 ### Camera Calibration
 
+```
+python calibrate_cameras.py -cs 4
+
+# runs the calibration on camera 4
+```
+
 In order to calibrate the cameras you need to run the `calibrate_cameras.py` script. By selecting the camera you want to calibrate, the program will load the dumps and proceed automatically. The calibration parameters will be saved in the `data/camera_data/cam_i/calib` folder.
 
 ```
@@ -137,7 +146,11 @@ options:
 ```
 
 ### Pose Estimation
+```
+python pose_estimation.py -c 4
 
+# runs the pose estimation on camera 4
+```
 The last step of the calibration is the pose estimation. By running the `pose_estimation.py` script you will be able to estimate the pose of the cameras and save the results in the `data/camera_data/cam_i/calib` folder.
 
 
@@ -174,6 +187,9 @@ If you are not interested in training a new YOLO model you can skip this step an
 
 ### Annotation
 
+```
+python annotator.py
+```
 The annotation tool is a simple script that allows you to annotate the images with the bounding boxes of the balls. The script will create a new dataset folder with a timestamp and progressively save the annotations in the YOLO format and the frames in two separate folders 'images' and 'labels'.
 
 <img src="imgs/annotator.png" width=80%>
@@ -191,6 +207,11 @@ As you proceed with the annotation the script will show the progress and the num
 
 ### Data Augmentation
 
+```
+python agument_diy.py -t yolotools/datasets/target -s 1000
+
+# generates 1000 samples in the target folder
+```
 Since not much data was available for the training of the model, we decided to augment the dataset by generating new samples. The script will generate a balanced dataset with 50% of the samples with the ball and 50% without the ball. The new samples will be saved in a new folder with the same structure as the original dataset.
 
 ```
@@ -205,6 +226,10 @@ options:
   -s  Set the amount of samples to generate
 ```
 ### Data Splitting
+
+```
+python split.py -d yolotools/datasets/target -t yolotools/datasets/split
+```
 
 This script allows you to split the dataset in train, test and validation sets. The script will create a new folder with the correct structure for a YOLO dataset, copying the images and labels in the correct folders and insert the `data.yaml` file needed for training.
 ```
@@ -221,10 +246,17 @@ You can check if the dataset was correctly created by running the `checklabels.p
 
 ### Training
 
+```
+python train.py
+```
+
 Finally you can train the model by running the `train.py` script. The script will load the dataset and start the training process.
 
 ### Test Detection
 
+```
+python test_multicam.py
+```
 You can test your model by running the `test_multicam.py` script. The script will load the model weights (don't forget to put them in the `weights` folder or to set `model_path`) and run the detection on the video. 
 
 <img src="imgs/detecting.png" width=80%>
@@ -247,7 +279,11 @@ Detection uses the **SlicedYOLO** system, by default the windowing is $640 \time
 *Two examples of sliced inference, many smaller windows are more precise but also slower.*
 
 ## Tracking
+```
+python multi_track_demo.py -m 3 -s 700
 
+# runs the tracking in mode 3 starting from frame 700
+```
 The tracking demo can be run by executing the `multi_track_demo.py` script. The script will load the calibration parameters and the model weights and start the tracking process.
 
 <img src="imgs/multi_tracking.png" width=100%>
@@ -275,6 +311,10 @@ By pressing 'q' you can exit the program and the tracking will stop. A window wi
 ## Additional Tools
 
 ### Split View
+
+```
+python split_view.py
+```
 
 The `split_view.py` script allows you to visualize the cameras in the corrispettive positions. The tool will show two cameras at a time and you can cycle between them by pressing 'a' and 'd'. The diagram in the top left shows which cameras are currently shown.
 You can click anywhere on the screen to see where that point falls on the court in the other camera views.
