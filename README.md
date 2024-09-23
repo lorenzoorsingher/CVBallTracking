@@ -1,5 +1,5 @@
 
-# FAH (Funny Achronym Here)
+# FASTRACK – Fast and Simple 3D Tracking
 
 Project for Computer Vision, UniTN
 
