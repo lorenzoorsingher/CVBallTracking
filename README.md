@@ -328,9 +328,9 @@ press 'd' to cycle through the cameras on the bottom quadrant (purple)
 press 'q' to exit
 ```
 
-### more
+### More
 
-In the `tools` are present some more tools for visualization and testing.
+In the `tools` directory are present some more tools for visualization and testing.
 
 
 
